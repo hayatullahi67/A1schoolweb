@@ -1,0 +1,9 @@
+# *
+User-agent: *
+Allow: /
+
+# Host
+Host: https://unicon-tech.vercel.app/
+
+# Sitemaps
+Sitemap: https://unicon-tech.vercel.app/sitemap.xml
