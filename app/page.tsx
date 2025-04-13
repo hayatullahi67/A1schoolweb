@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
 
 import { useState, useEffect } from "react";
@@ -22,6 +23,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import CourseCard from "@/components/course-card";
 import TestimonialCard from "@/components/testimonial-card";
 import ParticlesBackground from "@/components/particles-background";
+import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("all");
@@ -88,52 +91,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-16 items-center justify-between">
-          <div className="flex items-center gap-6 md:gap-10">
-            <Link href="/" className="flex items-center space-x-2">
-              <BookOpen className="h-6 w-6 text-primary" />
-              <span className="hidden font-bold sm:inline-block">EduLearn</span>
-            </Link>
-            <nav className="hidden gap-6 md:flex">
-              <Link
-                href="/courses"
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                Courses
-              </Link>
-              <Link
-                href="/about"
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                About
-              </Link>
-              <Link
-                href="/blog"
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                Blog
-              </Link>
-              <Link
-                href="/contact"
-                className="text-sm font-medium transition-colors hover:text-primary"
-              >
-                Contact
-              </Link>
-            </nav>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link href="/login">
-              <Button variant="ghost" size="sm">
-                Log in
-              </Button>
-            </Link>
-            <Link href="/register">
-              <Button size="sm">Sign up</Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
       <main className="flex-1">
         {/* Hero Section with Animated Background */}
         <section className="relative w-full overflow-hidden bg-gradient-to-r from-primary/10 via-primary/5 to-background py-12 md:py-24 lg:py-32">
@@ -626,153 +584,7 @@ export default function Home() {
           </div>
         </section>
       </main>
-      <footer className="w-full border-t bg-background py-6 md:py-12">
-        <div className="container px-4 md:px-6">
-          <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium">About</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/about"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    About Us
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/blog"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/careers"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    Careers
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium">Support</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/contact"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    Contact Us
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/help"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/faq"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    FAQ
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium">Legal</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="/terms"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/privacy"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    Privacy Policy
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="/cookies"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    Cookie Policy
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="space-y-3">
-              <h3 className="text-lg font-medium">Connect</h3>
-              <ul className="space-y-2">
-                <li>
-                  <Link
-                    href="#"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    Twitter
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    Facebook
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-sm text-muted-foreground hover:text-foreground"
-                  >
-                    Instagram
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t pt-6 sm:flex-row">
-            <p className="text-sm text-muted-foreground">
-              © {new Date().getFullYear()} EduLearn. All rights reserved.
-            </p>
-            <div className="flex items-center gap-4">
-              <Link
-                href="#"
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                Terms
-              </Link>
-              <Link
-                href="#"
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                Privacy
-              </Link>
-              <Link
-                href="#"
-                className="text-sm text-muted-foreground hover:text-foreground"
-              >
-                Cookies
-              </Link>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
