@@ -339,7 +339,7 @@ const inProgressCourses = [
     progress: 65,
     completedLessons: 26,
     totalLessons: 40,
-    image: "/placeholder.svg?height=220&width=400",
+    image: "/images/webdev.jpeg",
   },
   {
     id: 2,

@@ -202,11 +202,11 @@ export default function Home() {
                     }}
                   />
                   <Image
-                    src="/placeholder.svg?height=550&width=550"
+                    src="/images/hero.png"
                     width={550}
                     height={550}
                     alt="Hero Image"
-                    className="relative rounded-lg object-cover shadow-xl"
+                    className="relative rounded-lg object-cover "
                     priority
                   />
                   <motion.div
@@ -312,24 +312,17 @@ export default function Home() {
                 </Button>
 
                 <div className="w-full overflow-hidden px-4">
-                  <motion.div
-                    className="flex gap-4 transition-all duration-500 ease-in-out"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    variants={staggerContainer}
-                  >
+                  <div className="flex gap-4 transition-all duration-500 ease-in-out">
                     {visibleCategories.map((category, index) => (
-                      <motion.div
+                      <div
                         key={`${category.name}-${index}`}
                         className="w-full min-w-[150px] flex-1 sm:min-w-[180px]"
-                        variants={fadeInUp}
                       >
                         <Link href={`/category/${category.slug}`}>
-                          <Card className="h-full transition-all hover:shadow-md hover:scale-105">
+                          <Card className="h-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 transition-all hover:shadow-md hover:scale-105">
                             <CardContent className="flex flex-col items-center justify-center p-6">
                               <category.icon className="h-10 w-10 mb-2 text-primary" />
-                              <h3 className="text-center font-medium">
+                              <h3 className="text-center font-medium text-gray-900 dark:text-white">
                                 {category.name}
                               </h3>
                               <p className="mt-1 text-xs text-muted-foreground">
@@ -338,9 +331,9 @@ export default function Home() {
                             </CardContent>
                           </Card>
                         </Link>
-                      </motion.div>
+                      </div>
                     ))}
-                  </motion.div>
+                  </div>
                 </div>
 
                 <Button
@@ -880,7 +873,7 @@ const featuredCourses = [
     rating: 4.8,
     students: 12500,
     price: 89.99,
-    image: "/placeholder.svg?height=220&width=400",
+    image: "/images/webdev.jpeg",
     category: "Web Development",
     level: "Beginner",
   },
@@ -891,7 +884,7 @@ const featuredCourses = [
     rating: 4.9,
     students: 8300,
     price: 94.99,
-    image: "/placeholder.svg?height=220&width=400",
+    image: "/images/datascince.png",
     category: "Data Science",
     level: "Intermediate",
   },
@@ -902,7 +895,7 @@ const featuredCourses = [
     rating: 4.7,
     students: 6200,
     price: 79.99,
-    image: "/placeholder.svg?height=220&width=400",
+    image: "/images/uiux.jpg",
     category: "Design",
     level: "All Levels",
   },
@@ -913,7 +906,7 @@ const featuredCourses = [
     rating: 4.6,
     students: 5100,
     price: 69.99,
-    image: "/placeholder.svg?height=220&width=400",
+    image: "/images/digital.jpeg",
     category: "Marketing",
     level: "Beginner",
   },
