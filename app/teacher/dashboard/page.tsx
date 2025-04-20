@@ -737,7 +737,7 @@ const [instructor, setInstructor] = useState<Instructor>({
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <Button variant="outline">View Analytics</Button>
+              {/* <Button variant="outline">View Analytics</Button> */}
               <Button>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Create Course
@@ -813,7 +813,12 @@ const [instructor, setInstructor] = useState<Instructor>({
               </TabsList>
               <TabsContent value="courses">
                 <div className="grid gap-6 md:grid-cols-2  lg:grid-cols-3">
-                  {coursesWithStudentCounts.map((course) => (
+                  { coursesWithStudentCounts.length === 0 ? (
+  <p className="text-muted-foreground text-center mt-8">
+    You have not uploaded any course yet.
+  </p>
+) : 
+                  (coursesWithStudentCounts.map((course) => (
                     <Card key={course.id} className="overflow-hidden w-[330px]">
                       <div className="aspect-video w-full overflow-hidden">
                         <Image
@@ -860,7 +865,7 @@ const [instructor, setInstructor] = useState<Instructor>({
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                  )))}
                 </div>
               </TabsContent>
               <TabsContent value="students" >
@@ -899,7 +904,14 @@ const [instructor, setInstructor] = useState<Instructor>({
                         </div>
                       ))} */}
 
-{students.map((student) => (
+{
+students.length === 0 ? (
+  <p className="text-muted-foreground text-center mt-8">
+ Student are yet to enroll yr course .
+  </p>
+) : 
+
+(students.map((student) => (
   <div key={student.id} className="flex items-center justify-between">
     <div className="flex items-center gap-3">
       <Image
@@ -918,7 +930,7 @@ const [instructor, setInstructor] = useState<Instructor>({
     </div>
     <div className="text-sm text-muted-foreground">{student.courseUpdatedAt}</div>
   </div>
-))}
+)))}
 
                     </div>
                   </CardContent>

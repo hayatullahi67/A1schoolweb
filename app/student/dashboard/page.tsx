@@ -398,7 +398,14 @@ setCourseid(courseIds)
               </TabsList>
               <TabsContent value="in-progress">
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {courses.map((course) => (
+                  {
+                   courses.length === 0 ? (
+                    <p className="text-muted-foreground text-center mt-8">
+                     You haven't taken any courses yet.
+                    </p>
+                  ) : 
+                  
+                  (courses.map((course) => (
                     <Card key={course.id} className="w-[320px] overflow-hidden">
                       <div className="aspect-video w-full overflow-hidden">
                         <Image
@@ -434,7 +441,7 @@ setCourseid(courseIds)
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                  )))}
                 </div>
               </TabsContent>
               <TabsContent value="completed">
@@ -483,7 +490,12 @@ setCourseid(courseIds)
               </TabsContent>
               <TabsContent value="recommended">
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {allcourses.map((course) => (
+                  { allcourses.length === 0 ? (
+  <p className="text-muted-foreground text-center mt-8">
+     No uploaded  course yet.
+  </p>
+) : 
+ (allcourses.map((course) => (
                     <Card key={course.id} className="overflow-hidden">
                       <div className="aspect-video w-full overflow-hidden">
                         {/* <Image
@@ -523,7 +535,7 @@ setCourseid(courseIds)
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                  )))}
                 </div>
               </TabsContent>
             </Tabs>
