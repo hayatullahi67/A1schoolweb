@@ -9,12 +9,15 @@ import { FiArrowRight } from "react-icons/fi";
 import { AiFillStar } from "react-icons/ai";
 
 import { Button } from "@/components/ui/button";
+import Header from "@/components/header";
 
 export default function AboutPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <>
+    <Header />
+     <div className="min-h-screen flex flex-col">
       <main className="flex-1">
         {/* Hero Section */}
         <section className="bg-[#2563eb] py-12 md:py-20">
@@ -228,5 +231,7 @@ export default function AboutPage() {
         </section>
       </main>
     </div>
+    </>
+   
   );
 }

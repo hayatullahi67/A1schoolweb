@@ -15,7 +15,7 @@ interface CourseCardProps {
 
 export default function CourseCard({ course }: CourseCardProps) {
   return (
-    <Link href={`/courses/${course.id}`}>
+    <Link href="/register">
       <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
         <Card className="h-full overflow-hidden transition-all hover:shadow-md">
           <div className="aspect-video w-full overflow-hidden">
@@ -67,9 +67,9 @@ export default function CourseCard({ course }: CourseCardProps) {
               <span className="text-lg font-bold">
                 ${course.price}
               </span>
-              <Badge className="transition-colors hover:bg-primary/90">
+              {/* <Badge className="transition-colors hover:bg-primary/90">
                 Enroll Now
-              </Badge>
+              </Badge> */}
             </div>
           </CardFooter>
         </Card>

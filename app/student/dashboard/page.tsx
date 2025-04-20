@@ -286,30 +286,30 @@ setCourseid(courseIds)
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
+              {/* <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href={`/student/courses/${studentId}`}>
                     <BookOpen className="h-4 w-4" />
                     <span>My Courses</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
+              </SidebarMenuItem> */}
+              {/* <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/student/calendar">
                     <Calendar className="h-4 w-4" />
                     <span>Calendar</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
+              </SidebarMenuItem> */}
+              {/* <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/student/messages">
                     <MessageSquare className="h-4 w-4" />
                     <span>Messages</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
+              </SidebarMenuItem> */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/student/profile">
@@ -370,9 +370,9 @@ setCourseid(courseIds)
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{courses.length}</div>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="text-xs text-muted-foreground">
                   +1 from last month
-                </p>
+                </p> */}
               </CardContent>
             </Card>
             <Card>
@@ -384,12 +384,12 @@ setCourseid(courseIds)
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">2</div>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="text-xs text-muted-foreground">
                   +1 from last month
-                </p>
+                </p> */}
               </CardContent>
             </Card>
-            <Card>
+            {/* <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">
                   Hours Spent
@@ -398,11 +398,11 @@ setCourseid(courseIds)
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">42.5</div>
-                <p className="text-xs text-muted-foreground">
+                 <p className="text-xs text-muted-foreground">
                   +12.5 from last month
-                </p>
+                </p> 
               </CardContent>
-            </Card>
+            </Card> */}
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">
@@ -412,9 +412,9 @@ setCourseid(courseIds)
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{certificates.length || 0}</div>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="text-xs text-muted-foreground">
                   +1 from last month
-                </p>
+                </p> */}
               </CardContent>
             </Card>
           </div>

@@ -109,7 +109,7 @@ const [mostRecentCourse, setMostRecentCourse] = useState<Course[]>([]);
              console.log("res", res.slice(0, 4))
           setAllCourses(res); 
           setFirstFourCourses(res.slice(0, 4));
-          setMostRecentCourse(sortedCourses);
+          setMostRecentCourse(sortedCourses.slice(0,4));
           console.log("resoted", sortedCourses)
         } else {
           console.error("Unexpected response structure", data);
@@ -470,11 +470,11 @@ const [mostRecentCourse, setMostRecentCourse] = useState<Course[]>([]);
                   viewport={{ once: true }}
                   variants={staggerContainer}
                 >
-                  {/* {featuredCourses.slice(2, 6).map((course) => (
+                  {mostRecentCourse.map((course) => (
                     <motion.div key={course.id} variants={fadeInUp}>
                       <CourseCard course={course} />
                     </motion.div>
-                  ))} */}
+                  ))}
                 </motion.div>
               </TabsContent>
 

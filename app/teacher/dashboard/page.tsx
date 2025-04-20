@@ -755,9 +755,9 @@ const [instructor, setInstructor] = useState<Instructor>({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{courses.length}</div>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="text-xs text-muted-foreground">
                   +1 from last month
-                </p>
+                </p> */}
               </CardContent>
             </Card>
             <Card>
@@ -769,9 +769,9 @@ const [instructor, setInstructor] = useState<Instructor>({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalStudents}</div>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="text-xs text-muted-foreground">
                   +324 from last month
-                </p>
+                </p> */}
               </CardContent>
             </Card>
             <Card>
@@ -783,9 +783,9 @@ const [instructor, setInstructor] = useState<Instructor>({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold"> {formatCurrency(totalEarnings || 0) }</div>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="text-xs text-muted-foreground">
                   +$2,100 from last month
-                </p>
+                </p> */}
               </CardContent>
             </Card>
             <Card>
@@ -797,19 +797,19 @@ const [instructor, setInstructor] = useState<Instructor>({
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold">{totalRating}</div>
-                <p className="text-xs text-muted-foreground">
+                {/* <p className="text-xs text-muted-foreground">
                   +0.2 from last month
-                </p>
+                </p> */}
               </CardContent>
             </Card>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-8 ">
             <Tabs defaultValue="courses">
               <TabsList className="mb-4">
                 <TabsTrigger value="courses">My Courses</TabsTrigger>
                 <TabsTrigger value="students">Recent Students</TabsTrigger>
-                <TabsTrigger value="reviews">Latest Reviews</TabsTrigger>
+                {/* <TabsTrigger value="reviews">Latest Reviews</TabsTrigger> */}
               </TabsList>
               <TabsContent value="courses">
                 <div className="grid gap-6 md:grid-cols-2  lg:grid-cols-3">
@@ -869,9 +869,12 @@ const [instructor, setInstructor] = useState<Instructor>({
                 </div>
               </TabsContent>
               <TabsContent value="students" >
+                <div className="grid gap-6 md:grid-cols-2  lg:grid-cols-3">
+
+                </div>
                 <Card >
                   <CardHeader>
-                    <CardTitle>Recently Enrolled Students</CardTitle>
+                    <CardTitle> Enrolled Students</CardTitle>
                     <CardDescription>
                       Students who enrolled in your courses in the last 30 days
                     </CardDescription>
@@ -936,7 +939,7 @@ students.length === 0 ? (
                   </CardContent>
                 </Card>
               </TabsContent>
-              <TabsContent value="reviews">
+              {/* <TabsContent value="reviews">
                 <Card>
                   <CardHeader>
                     <CardTitle>Latest Reviews</CardTitle>
@@ -993,7 +996,7 @@ students.length === 0 ? (
                     </div>
                   </CardContent>
                 </Card>
-              </TabsContent>
+              </TabsContent> */}
             </Tabs>
           </div>
         </div>
