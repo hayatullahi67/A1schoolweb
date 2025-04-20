@@ -17,12 +17,143 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+interface Role {
+  name: string;
+}
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [userType, setUserType] = useState("student");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
+  };
+
+
+
+  // const handleLogin = async () => {
+  //   setLoading(true);
+  //   setError(""); // Reset error before new login attempt
+  //   const loginData = { email, password, userType };
+
+  //   try {
+  //     const res = await fetch("https://api.a1schools.org/auth/login", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(loginData),
+  //     });
+
+  //     const data = await res.json();
+  //       console.log("data",data)
+  //     if (res.ok) {
+  //       // Store token or any other data (e.g., JWT) for authenticated sessions
+  //       localStorage.setItem("authToken", data.token); // Example of storing token
+  //       // Redirect user to a dashboard or home page
+  //       // window.location.href = "/dashboard"; // You can change this based on your app
+  //     } else {
+  //       setError(data.message || "Login failed. Please try again.");
+  //     }
+  //   } catch (err) {
+  //     setError("An error occurred. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+
+  const handleLogin = async () => {
+    setLoading(true);
+    setError(""); // Reset error before new login attempt
+  
+    const loginData = { email, password, userType };
+  
+    try {
+      const res = await fetch("https://api.a1schools.org/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
+  
+      const data = await res.json();
+      console.log("data", data);
+  
+      if (res.ok) {
+        // Store token and user data in localStorage for authenticated sessions
+        // localStorage.setItem("authToken", data.token);
+        localStorage.setItem("userData", JSON.stringify(data.data)); // Store the user data
+  
+        // Check user role and navigate accordingly
+        const roles = data.data.roles || [];
+        const isStudent = roles.some((role: Role) => role.name === "student");
+        // const isInstructor = roles.some((role: Role) => role.name === "instructor");
+        if (isStudent) {
+          // Navigate to student dashboard
+          window.location.href = "/student/dashboard"; // Adjust URL as needed
+
+        } else {
+          // Handle other roles or show an error message
+          setError("Unknown role. Access is denied.");
+        }
+      } else {
+        setError(data.message || "Login failed. Please try again.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const teacherhandleLogin = async () => {
+    setLoading(true);
+    setError(""); // Reset error before new login attempt
+  
+    const loginData = { email, password, userType };
+  
+    try {
+      const res = await fetch("https://api.a1schools.org/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(loginData),
+      });
+  
+      const data = await res.json();
+      console.log("data", data);
+  
+      if (res.ok) {
+        // Store token and user data in localStorage for authenticated sessions
+        // localStorage.setItem("authToken", data.token);
+        localStorage.setItem("userData", JSON.stringify(data.data)); // Store the user data
+  
+        // Check user role and navigate accordingly
+        const roles = data.data.roles || [];
+        const isInstructor = roles.some((role: Role) => role.name === "instructor");
+        // const isInstructor = roles.some((role: Role) => role.name === "instructor");
+        if (isInstructor) {
+          // Navigate to student dashboard
+          window.location.href = "/teacher/dashboard"; // Adjust URL as needed
+
+        } else {
+          // Handle other roles or show an error message
+          setError("Unknown role. Access is denied.");
+        }
+      } else {
+        setError(data.message || "Login failed. Please try again.");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,6 +198,8 @@ export default function LoginPage() {
                     id="student-email"
                     type="email"
                     placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                   />
                 </div>
                 <div className="space-y-2">
@@ -84,6 +217,8 @@ export default function LoginPage() {
                       id="student-password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                     />
                     <Button
                       type="button"
@@ -105,7 +240,9 @@ export default function LoginPage() {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
-                <Button className="w-full">Sign In</Button>
+              {error && <p className="text-red-500 text-center">{error}</p>}
+                <Button onClick={handleLogin} disabled={loading} className="w-full">  {loading ? "Signing In..." : "Sign In"}</Button>
+                
                 <div className="flex items-center space-x-2">
                   <div className="flex-1 border-t"></div>
                   <span className="text-xs text-muted-foreground">OR</span>
@@ -170,7 +307,8 @@ export default function LoginPage() {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
-                <Button className="w-full">Sign In</Button>
+              {error && <p className="text-red-500 text-center">{error}</p>}
+              <Button onClick={teacherhandleLogin} disabled={loading} className="w-full">  {loading ? "Signing In..." : "Sign In"}</Button>
                 <div className="flex items-center space-x-2">
                   <div className="flex-1 border-t"></div>
                   <span className="text-xs text-muted-foreground">OR</span>

@@ -1,3 +1,7 @@
+
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -32,8 +36,208 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
 } from "@/components/ui/sider";
+type Student = {
+  fullname: string;
+  email: string;
+  token: string;
+  id: string;
+};
+
+type Course = {
+  id: string;
+  name: string;
+  instructor: {
+    fullname: string;
+    image_link: string;
+  };
+  image_link:string
+  price: string;
+  updated_at: string;
+  description: string;
+  discount: string;
+  created_at: string;
+  progress: number;
+  completedLessons: number;
+  totalLessons: number;
+  category: string;
+};
+
+type AllCourse = {
+  id: string;
+  name: string;
+  instructor: {
+    fullname: string;
+    image_link: string;
+  };
+  image_link:string
+  price: string;
+  updated_at: string;
+  description: string;
+  discount: string;
+  created_at: string;
+  progress: number;
+  completedLessons: number;
+  totalLessons: number;
+  category: {};
+  average_rating:string
+};
 
 export default function StudentDashboard() {
+  const [student, setStudent] = useState<Student>({
+    fullname: "Loading...",
+    email: "",
+    id:"",
+    token: "",
+  });
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [allcourses, setallCourses] = useState<AllCourse[]>([]);
+  const [courseId , setCourseid] = useState()
+  const [certificates, setCertificates] = useState<{ [courseId: string]: any }>({});
+  const studentId = student.id;
+  const  token = student.token;
+  useEffect(() => {
+    
+    const stored = localStorage.getItem("userData");
+    console.log("stored",stored)
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      console.log("parsed",parsed)
+      setStudent({
+        fullname: parsed.fullname || "Student",
+        email: parsed.email || "",
+        id: parsed.id,
+        token: parsed.token
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    // Fetch courses when the student ID is available
+    if (studentId) {
+      const fetchCourses = async () => {
+        try {
+          const response = await fetch(`https://api.a1schools.org/users/${studentId}/courses`, {
+            method: "GET",
+            headers: {
+              'Authorization': `Bearer ${token}`,  // Replace with your token
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch courses");
+          }
+
+          const data = await response.json();
+          console.log("data",data)
+          setCourses(data.data); // Assuming the API returns a `courses` array
+          const courseIds = data.data.map((course: Course) => course.id);
+console.log("All Course IDs:", courseIds); 
+setCourseid(courseIds)
+        } catch (error) {
+          console.error("Error fetching courses:", error);
+        }
+      };
+
+      fetchCourses();
+    }
+  }, [studentId, token]);
+
+  useEffect(() => {
+    const fetchCertificates = async () => {
+      if (!token || courses.length === 0) return;
+  
+      const certMap: { [courseId: string]: any } = {};
+  
+      for (const course of courses) {
+        try {
+          const response = await fetch(`https://api.a1schools.org/courses/${course.id}/certificate`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+  
+          if (!response.ok) {
+            console.warn(`No certificate for course ${course.id}`);
+            continue;
+          }
+  
+          const data = await response.json();
+          console.log("data cert" , data )
+          certMap[course.id] = data;
+          setCertificates(certMap);
+          console.log("certmap",certMap)
+        } catch (error) {
+          console.error(`Error fetching certificate for course ${course.id}:`, error);
+        }
+      }
+  
+      setCertificates(certMap);
+    };
+  
+    fetchCertificates();
+  }, [courses, token]);
+
+
+  // useEffect(() => {
+  //   // Fetch courses when the student ID is available
+    
+  //     const fetchallCourses = async () => {
+  //       try {
+  //         const response = await fetch(`https://api.a1schools.org/courses`, {
+  //           method: "GET",
+  //           headers: {
+  //             'Authorization': `Bearer ${token}`,  // Replace with your token
+  //             'Content-Type': 'application/json',
+  //           },
+  //         });
+
+  //         if (!response.ok) {
+  //           throw new Error("Failed to fetch courses");
+  //         }
+
+  //         const data = await response.json();
+  //         console.log("data",data)
+  //         setallCourses(data.data); // Assuming the API returns a `courses` array
+          
+  //       } catch (error) {
+  //         console.error("Error fetching courses:", error);
+  //       }
+  //     };
+
+  //     fetchallCourses();
+    
+  // }, [, token]);
+
+  useEffect(() => {
+    const fetchallCourses = async () => {
+      try {
+        const response = await fetch(`https://api.a1schools.org/courses`, {
+          method: "GET",
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to fetch courses");
+        }
+  
+        const data = await response.json();
+        console.log("data", data);
+        setallCourses(data.data); // Ensure data.data is an array
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+  
+    if (token) {
+      fetchallCourses();
+    }
+  }, [token]);
+  
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -54,7 +258,7 @@ export default function StudentDashboard() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/student/courses">
+                  <Link href={`/student/courses/${studentId}`}>
                     <BookOpen className="h-4 w-4" />
                     <span>My Courses</span>
                   </Link>
@@ -104,9 +308,9 @@ export default function StudentDashboard() {
                 className="rounded-full"
               />
               <div className="flex flex-col">
-                <span className="text-sm font-medium">John Doe</span>
+                <span className="text-sm font-medium">{student.fullname}</span>
                 <span className="text-xs text-muted-foreground">
-                  john.doe@example.com
+                 {student.email}
                 </span>
               </div>
             </div>
@@ -117,7 +321,7 @@ export default function StudentDashboard() {
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
               <p className="text-muted-foreground">
-                Welcome back, John! Here&apos;s your learning summary.
+                Welcome back, {student.fullname}! Here&apos;s your learning summary.
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -135,7 +339,7 @@ export default function StudentDashboard() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">5</div>
+                <div className="text-2xl font-bold">{courses.length}</div>
                 <p className="text-xs text-muted-foreground">
                   +1 from last month
                 </p>
@@ -177,7 +381,7 @@ export default function StudentDashboard() {
                 <Star className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">2</div>
+                <div className="text-2xl font-bold">{certificates.length || 0}</div>
                 <p className="text-xs text-muted-foreground">
                   +1 from last month
                 </p>
@@ -194,12 +398,12 @@ export default function StudentDashboard() {
               </TabsList>
               <TabsContent value="in-progress">
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {inProgressCourses.map((course) => (
-                    <Card key={course.id} className="overflow-hidden">
+                  {courses.map((course) => (
+                    <Card key={course.id} className="w-[320px] overflow-hidden">
                       <div className="aspect-video w-full overflow-hidden">
                         <Image
-                          src={course.image || "/placeholder.svg"}
-                          alt={course.title}
+                          src={course.image_link || "/placeholder.svg"}
+                          alt={course.name}
                           width={400}
                           height={220}
                           className="h-full w-full object-cover"
@@ -207,9 +411,9 @@ export default function StudentDashboard() {
                       </div>
                       <CardHeader className="p-4 pb-0">
                         <CardTitle className="text-lg">
-                          {course.title}
+                          {course.name}
                         </CardTitle>
-                        <CardDescription>{course.instructor}</CardDescription>
+                        <CardDescription>{course.instructor.fullname}</CardDescription>
                       </CardHeader>
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
@@ -279,32 +483,33 @@ export default function StudentDashboard() {
               </TabsContent>
               <TabsContent value="recommended">
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {recommendedCourses.map((course) => (
+                  {allcourses.map((course) => (
                     <Card key={course.id} className="overflow-hidden">
                       <div className="aspect-video w-full overflow-hidden">
-                        <Image
-                          src={course.image || "/placeholder.svg"}
-                          alt={course.title}
+                        {/* <Image
+                          src={course.image_link }
+                          alt={course.name}
                           width={400}
                           height={220}
                           className="h-full w-full object-cover"
-                        />
+                        /> */}
+                        <img src={course.image_link}  width={400}
+                          height={220}  className="h-full w-full object-cover" alt="" />
                       </div>
                       <CardHeader className="p-4 pb-0">
                         <CardTitle className="text-lg">
-                          {course.title}
+                          {course.name}
                         </CardTitle>
-                        <CardDescription>{course.instructor}</CardDescription>
+                        <CardDescription>{course.instructor.fullname}</CardDescription>
                       </CardHeader>
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center">
                             <Star className="h-4 w-4 fill-primary text-primary mr-1" />
                             <span className="text-sm font-medium">
-                              {course.rating}
+                              {course.average_rating || 0}
                             </span>
                             <span className="text-xs text-muted-foreground ml-1">
-                              ({course.reviews} reviews)
                             </span>
                           </div>
                           <span className="text-sm font-bold">
@@ -313,7 +518,6 @@ export default function StudentDashboard() {
                         </div>
                         <div className="mt-4 flex items-center justify-between">
                           <span className="text-sm text-muted-foreground">
-                            {course.level} • {course.duration}
                           </span>
                           <Button size="sm">Enroll</Button>
                         </div>

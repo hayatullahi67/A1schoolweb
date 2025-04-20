@@ -1,3 +1,8 @@
+"use client";
+
+
+
+import { useState , useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -32,7 +37,601 @@ import {
   SidebarMenuButton,
 } from "@/components/ui/sider";
 
+type Instructor = {
+  fullname: string;
+  email: string;
+  token: string;
+  id: string;
+};
+
+type Course = {
+  id: string;
+  name: string;
+  instructor: {
+    fullname: string,
+    image_link: string
+  }
+   price: string
+    image_link: string
+    average_rating: string
+    updated_at: string
+  progress: number;
+  completedLessons: number;
+  totalLessons: number;
+  category:string
+  students?: number;
+};
+
+interface Transaction {
+  amount: string;
+  status: string;
+  // Add more fields if needed
+}
+
+type Student = {
+  id: string;
+  fullname: string;
+  image_link: string;
+  course: string;
+  courseUpdatedAt: string;
+};
+
 export default function TeacherDashboard() {
+const [instructor, setInstructor] = useState<Instructor>({
+    fullname: "Loading...",
+    email: "",
+    id:"",
+    token: "",
+  });
+  const [courses, setCourses] = useState<Course[]>([]);
+  const [courseId, setcourseId] = useState <string []> ();
+  const [enrollmentIds, setEnrollmentIds] = useState<Record<string, string[]>>({});
+  const [studentDetails, setStudentDetails] = useState<{ [courseId: string]: number }>({});
+  const [totalStudents, setTotalStudents] = useState<number>(0)
+   const [totalEarnings , setTotalEarnings] = useState()
+   const [totalRating , setTotalRating] = useState()
+   const [students, setStudents] = useState<Student[]>([]);
+
+  const instructorId = instructor.id;
+  const  token = instructor.token;
+    useEffect(() => {
+        
+        const stored = localStorage.getItem("userData");
+        console.log("stored",stored)
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          console.log("parsed",parsed)
+          setInstructor({
+            fullname: parsed.fullname || "Student",
+            email: parsed.email || "",
+            id: parsed.id,
+            token: parsed.token
+          });
+        }
+      }, []);
+
+
+      useEffect(() => {
+        if (instructorId) {
+          const fetchCourses = async () => {
+            try {
+              const response = await fetch(
+                `https://api.a1schools.org/instructors/${instructorId}/courses`,
+                {
+                  method: "GET",
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                  },
+                }
+              );
+      
+              if (!response.ok) {
+                throw new Error("Failed to fetch courses");
+              }
+      
+              const data = await response.json();
+              const coursesList = data.data; // this is likely an array
+      
+              console.log("Fetched courses:", coursesList);
+      
+              // const totalRating = coursesList.reduce((sum, course) => {
+              //   const rating = Number(course.averageRating) || 0;
+              //   return sum + rating;
+              // }, 0);
+               
+              const totalRating = coursesList.reduce((sum: number, course: { averageRating?: number | string }): number => {
+                const rating = Number(course.averageRating) || 0;
+                return sum + rating;
+              }, 0);
+              
+              
+              setTotalRating(totalRating)
+
+              console.log("Total of all average ratings:", totalRating);
+
+              // Example: just grab the first course ID (or do what makes sense for your UI)
+              if (Array.isArray(coursesList) && coursesList.length > 0) {
+                const courseIds = coursesList.map(course => course.id);
+                const courseId = courseIds;
+                setcourseId(courseIds)
+                console.log("courselist", courseIds)
+              }
+      
+              
+              setCourses(coursesList);
+            } catch (error) {
+              console.error("Error fetching courses:", error);
+            }
+          };
+      
+          fetchCourses();
+        }
+      }, [instructorId, token]);
+        
+     
+
+      // useEffect(() => {
+      //   const fetchEnrollmentsForEachCourse = async () => {
+      //     if (instructorId && Array.isArray(courseId) && courseId.length > 0) {
+      //       try {
+      //         for (const id of courseId) {
+      //           const res = await fetch(
+      //             `https://api.a1schools.org/instructors/${instructorId}/courses/${id}/enrollments`,
+      //             {
+      //               method: "GET",
+      //               headers: {
+      //                 Authorization: `Bearer ${token}`,
+      //                 "Content-Type": "application/json",
+      //               },
+      //             }
+      //           );
+      
+      //           if (!res.ok) {
+      //             throw new Error(`Failed to fetch enrollments for course ${id}`);
+      //           }
+      
+      //           const data = await res.json();
+      
+      //           console.log(`Enrollments for course ${id}:`, data);
+      //         }
+      //       } catch (err) {
+      //         console.error("Error fetching enrollments for courses:", err);
+      //       }
+      //     }
+      //   };
+      
+      //   fetchEnrollmentsForEachCourse();
+      // }, [instructorId, courseId, token]);
+      
+    
+      useEffect(() => {
+        const fetchEnrollmentsForEachCourse = async () => {
+          if (instructorId && Array.isArray(courseId) && courseId.length > 0) {
+            try {
+              const enrollmentMap: Record<string, string[]> = {};
+      
+              for (const id of courseId) {
+                const res = await fetch(
+                  `https://api.a1schools.org/instructors/${instructorId}/courses/${id}/enrollments`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+      
+                if (!res.ok) {
+                  throw new Error(`Failed to fetch enrollments for course ${id}`);
+                }
+      
+                const data = await res.json();
+                console.log(`Enrollments for course ${id}:`, data);
+      
+                // Extract the enrollment IDs
+                const enrollmentIdsForCourse = data?.data.map((enrollment: any) => enrollment.id) || [];
+      
+                // Store the enrollment IDs in the map
+                enrollmentMap[id] = enrollmentIdsForCourse;
+              }
+                console.log("enroll" , enrollmentMap)
+              // Update the state with the collected enrollment IDs
+              setEnrollmentIds(enrollmentMap);
+            } catch (err) {
+              console.error("Error fetching enrollments for courses:", err);
+            }
+          }
+        };
+      
+        fetchEnrollmentsForEachCourse();
+      }, [instructorId, courseId, token]);
+      
+
+      // useEffect(() => {
+      //   const fetchEnrollmentDetails = async () => {
+      //     if (!instructorId || Object.keys(enrollmentIds).length === 0) return;
+    
+      //     try {
+      //       // Loop through each course in the enrollment map
+      //       for (const courseId of Object.keys(enrollmentIds)) {
+      //         const enrollmentIdss = enrollmentIds[courseId];
+    
+      //         // Loop through each enrollment for the course
+      //         for (const enrollmentId of enrollmentIdss) {
+      //           const response = await fetch(
+      //             `https://api.a1schools.org/instructors/${instructorId}/courses/${courseId}/enrollments/${enrollmentId}`
+      //           );
+      //           const data = await response.json();
+      //           console.log(
+      //             `📚 Students for enrollment ${enrollmentId} in course ${courseId}:`,
+      //             data
+      //           );
+    
+      //           // Map the student data into the state
+      //           if (data && data.data && data.data.students) {
+      //             // Updating state with students' data
+      //             setStudentDetails((prevDetails) => [
+      //               ...prevDetails,
+      //               ...data.data.students,
+      //             ]);
+      //             console.log("details",(prevDetails : any) => [
+      //               ...prevDetails,
+      //               ...data.data.students,
+      //             ])
+      //           }
+      //         }
+      //       }
+      //     } catch (error) {
+      //       console.error("Failed to fetch student enrollment details:", error);
+      //     }
+      //   };
+    
+      //   fetchEnrollmentDetails();
+      // }, [instructorId, enrollmentIds]);
+
+
+      // useEffect(() => {
+      //   const fetchEnrollmentDetails = async () => {
+      //     if (!instructorId || !token || Object.keys(enrollmentIds).length === 0) return;
+    
+      //     try {
+      //       let totalStudentsAcrossCourses = 0; 
+      //       // Loop through each course in the enrollment map
+      //       for (const courseId of Object.keys(enrollmentIds)) {
+      //         const enrollmentIdss = enrollmentIds[courseId];
+      //         let totalStudentsForCourse:number = 0;
+
+      //         // Loop through each enrollment for the course
+      //         for (const enrollmentId of enrollmentIdss) {
+      //           const response = await fetch(
+      //             `https://api.a1schools.org/instructors/${instructorId}/courses/${courseId}/enrollments/${enrollmentId}`,
+      //             {
+      //               method: 'GET',
+      //               headers: {
+      //                 'Authorization': `Bearer ${token}`, // Add your token here
+      //                 'Content-Type': 'application/json',
+      //               },
+      //             }
+      //           );
+      //           const data = await response.json();
+      //           console.log(
+      //             `📚 Students for enrollment ${enrollmentId} in course ${courseId}:`,
+      //             data
+      //           );
+                   
+      //           if (data && data.data && data.data.students) {
+      //             const studentCount = data.data.students.length;
+      //             console.log(`There are ${studentCount} students enrolled in course ${courseId}.`);
+
+      //             totalStudentsForCourse += studentCount;
+      //             console.log("count",totalStudentsForCourse) 
+      //           }
+                
+      //           // Map the student data into the state
+      //           if (data && data.data && data.data.students) {
+      //             // Updating state with students' data
+                  
+
+      //             setStudentDetails((prevCount) => ({
+      //               ...prevCount,
+      //               [courseId]: totalStudentsForCourse,
+      //             }));
+        
+      //             // Add the current course's student count to the total number of students across all courses
+      //             totalStudentsAcrossCourses += totalStudentsForCourse;
+      //           }
+      //           }
+      //         }
+      //       }
+      //     }  catch(error) {
+      //       console.error("Failed to fetch student enrollment details:", error);
+      //     }
+        
+    
+      //   fetchEnrollmentDetails();
+      // }, [instructorId, enrollmentIds, token]);
+
+
+      // useEffect(() => {
+      //   const fetchEnrollmentDetails = async () => {
+      //     if (!instructorId || !token || Object.keys(enrollmentIds).length === 0) return;
+      
+      //     try {
+      //       let totalStudentsAcrossCourses = 0;
+      
+      //       for (const courseId of Object.keys(enrollmentIds)) {
+      //         const enrollmentIdss = enrollmentIds[courseId];
+      //         let totalStudentsForCourse: number = 0;
+      
+      //         for (const enrollmentId of enrollmentIdss) {
+      //           const response = await fetch(
+      //             `https://api.a1schools.org/instructors/${instructorId}/courses/${courseId}/enrollments/${enrollmentId}`,
+      //             {
+      //               method: 'GET',
+      //               headers: {
+      //                 'Authorization': `Bearer ${token}`,
+      //                 'Content-Type': 'application/json',
+      //               },
+      //             }
+      //           );
+      
+      //           const data = await response.json();
+      
+      //           console.log(
+      //             `📚 Students for enrollment ${enrollmentId} in course ${courseId}:`,
+      //             data
+      //           );
+      
+      //           if (data && data.data && data.data.students) {
+      //             const studentCount = data.data.students.length;
+      //             console.log(`There are ${studentCount} students enrolled in course ${courseId}.`);
+      
+      //             totalStudentsForCourse += studentCount;
+      //           }
+      //         }
+      
+      //         // After looping through all enrollments for the course
+      //         setStudentDetails((prevCount) => ({
+      //           ...prevCount,
+      //           [courseId]: totalStudentsForCourse,
+      //         }));
+      
+      //         totalStudentsAcrossCourses += totalStudentsForCourse;
+      //       }
+      //       setTotalStudents(totalStudentsAcrossCourses)
+      
+      //       console.log("🎉 Total students across all courses:", totalStudentsAcrossCourses);
+      
+      //     } catch (error) {
+      //       console.error("❌ Failed to fetch student enrollment details:", error);
+      //     }
+      //   };
+      
+      //   fetchEnrollmentDetails();
+      // }, [instructorId, enrollmentIds, token]);
+      
+     
+      useEffect(() => {
+        const fetchEnrollmentDetails = async () => {
+          if (!instructorId || !token || Object.keys(enrollmentIds).length === 0) return;
+      
+          try {
+            let totalStudentsAcrossCourses = 0;
+      
+            for (const courseId of Object.keys(enrollmentIds)) {
+              const enrollmentList = enrollmentIds[courseId];
+              let totalStudentsForCourse = 0;
+      
+              for (const enrollmentId of enrollmentList) {
+                const response = await fetch(
+                  `https://api.a1schools.org/instructors/${instructorId}/courses/${courseId}/enrollments/${enrollmentId}`,
+                  {
+                    method: 'GET',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json',
+                    },
+                  }
+                );
+      
+                if (!response.ok) {
+                  console.error(`Failed to fetch enrollment ${enrollmentId} for course ${courseId}`);
+                  continue;
+                }
+      
+                const data = await response.json();
+      
+                const students = data?.data?.students ?? [];
+                const studentCount = students.length;
+      
+                console.log(`📚 ${studentCount} students enrolled in course ${courseId} (enrollment ${enrollmentId})`);
+      
+                totalStudentsForCourse += studentCount;
+              }
+      
+              // Update total for each course
+              setStudentDetails((prevCount) => ({
+                ...prevCount,
+                [courseId]: totalStudentsForCourse,
+              }));
+      
+              totalStudentsAcrossCourses += totalStudentsForCourse;
+            }
+      
+            setTotalStudents(totalStudentsAcrossCourses);
+            console.log("🎉 Total students across all courses:", totalStudentsAcrossCourses);
+      
+          } catch (error) {
+            console.error("❌ Failed to fetch student enrollment details:", error);
+          }
+        };
+      
+        fetchEnrollmentDetails();
+      }, [instructorId, enrollmentIds, token]);
+      
+      const coursesWithStudentCounts = courses.map(course => ({
+        ...course,
+        students: studentDetails[course.id] || 0, // Fallback to 0 if not yet fetched
+      }));
+      
+
+      useEffect(() => {
+        const fetchSuccessfulTransactions = async () => {
+          if (!instructorId || !token) return;
+      
+          try {
+            const response = await fetch(
+              `https://api.a1schools.org/instructors/${instructorId}/transactions`,
+              {
+                method: 'GET',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+      
+            const data = await response.json();
+            console.log("💰 Transactions data:", data);
+      
+            if (data && data.data && Array.isArray(data.data)) {
+              const successfulTransactions = data.data.filter(
+                (transaction:any) => transaction.status === "success"
+              );
+      
+              const totalAmount = successfulTransactions.reduce(
+                (acc: number, txn: Transaction): number => {
+                  const amount = parseFloat(txn.amount);
+                  return acc + (isNaN(amount) ? 0 : amount);
+                },
+                0
+              );
+                 
+              setTotalEarnings(totalAmount)
+              console.log("✅ Total Successful Transaction Amount:", totalAmount);
+            }
+          } catch (error) {
+            console.error("❌ Failed to fetch transactions:", error);
+          }
+        };
+      
+        fetchSuccessfulTransactions();
+      }, [instructorId, token]);
+      
+
+
+      // useEffect(() => {
+      //   const fetchAllStudents = async () => {
+      //     if (!instructorId || !token || Object.keys(enrollmentIds).length === 0) return;
+      
+      //     const allStudents: Student[] = [];
+      
+      //     try {
+      //       for (const courseId of Object.keys(enrollmentIds)) {
+      //         const enrollmentIdList = enrollmentIds[courseId];
+      
+      //         for (const enrollmentId of enrollmentIdList) {
+      //           const response = await fetch(
+      //             `https://api.a1schools.org/instructors/${instructorId}/courses/${courseId}/enrollments/${enrollmentId}`,
+      //             {
+      //               method: "GET",
+      //               headers: {
+      //                 Authorization: `Bearer ${token}`,
+      //                 "Content-Type": "application/json",
+      //               },
+      //             }
+      //           );
+      
+      //           const data = await response.json();
+      //           const studentss = data.data.students;
+      //           const studentNames = studentss.map((student: any) => student.fullname);
+      
+      //           if (data?.data?.students) {
+      //             const courseName = courses.find(c => c.id === courseId)?.name || "Unknown Course";
+      
+      //             const studentsInCourse = data.data.students.map((s: any) => ({
+      //               id: s.id,
+      //               fullname: s.fullname,
+      //               avatar: s.avatar || "/placeholder.svg",
+      //               course: courseName,
+      //               date: new Date(s.updated_at).toLocaleDateString(),
+      //             }));
+      
+      //             allStudents.push(...studentsInCourse);
+      //           }
+      //         }
+      //       }
+      
+      //       setStudents(allStudents);
+      //     } catch (error) {
+      //       console.error("❌ Error fetching all enrolled students:", error);
+      //     }
+      //   };
+      
+      //   fetchAllStudents();
+      // }, [instructorId, token, enrollmentIds, courses]);
+      
+
+      useEffect(() => {
+        const fetchAllStudents = async () => {
+          if (!instructorId || !token || Object.keys(enrollmentIds).length === 0) return;
+      
+          const allStudents: Student[] = [];
+      
+          try {
+            for (const courseId of Object.keys(enrollmentIds)) {
+              const enrollmentIdList = enrollmentIds[courseId];
+      
+              for (const enrollmentId of enrollmentIdList) {
+                const response = await fetch(
+                  `https://api.a1schools.org/instructors/${instructorId}/courses/${courseId}/enrollments/${enrollmentId}`,
+                  {
+                    method: "GET",
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                      "Content-Type": "application/json",
+                    },
+                  }
+                );
+      
+                const data = await response.json();
+      
+                const courseName = data?.data?.course?.name || "Unknown Course";
+                const courseUpdatedAt = data?.data?.course?.updated_at || new Date().toISOString();
+      
+                if (Array.isArray(data?.data?.students)) {
+                  const studentsInCourse = data.data.students.map((student: any) => ({
+                    id: student.id,
+                    fullname: student.fullname,
+                    image_link: student.image_link || "/placeholder.svg",
+                    course: courseName,
+                    courseUpdatedAt: new Date(courseUpdatedAt).toLocaleDateString(),
+                  }));
+      
+                  allStudents.push(...studentsInCourse);
+                }
+              }
+            }
+      
+            setStudents(allStudents);
+          } catch (error) {
+            console.error("❌ Error fetching all enrolled students:", error);
+          }
+        };
+      
+        fetchAllStudents();
+      }, [instructorId, token, enrollmentIds, courses]);
+      
+
+      const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }).format(amount)
+      }
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -119,9 +718,9 @@ export default function TeacherDashboard() {
                 className="rounded-full"
               />
               <div className="flex flex-col">
-                <span className="text-sm font-medium">Sarah Johnson</span>
+                <span className="text-sm font-medium">{instructor.fullname}</span>
                 <span className="text-xs text-muted-foreground">
-                  sarah.johnson@example.com
+                  {instructor.email}
                 </span>
               </div>
             </div>
@@ -134,7 +733,7 @@ export default function TeacherDashboard() {
                 Teacher Dashboard
               </h1>
               <p className="text-muted-foreground">
-                Welcome back, Sarah! Here&apos;s your teaching summary.
+                Welcome back, {instructor.fullname} Here&apos;s your teaching summary.
               </p>
             </div>
             <div className="flex items-center gap-4">
@@ -155,7 +754,7 @@ export default function TeacherDashboard() {
                 <BookOpen className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">4</div>
+                <div className="text-2xl font-bold">{courses.length}</div>
                 <p className="text-xs text-muted-foreground">
                   +1 from last month
                 </p>
@@ -169,7 +768,7 @@ export default function TeacherDashboard() {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">1,248</div>
+                <div className="text-2xl font-bold">{totalStudents}</div>
                 <p className="text-xs text-muted-foreground">
                   +324 from last month
                 </p>
@@ -183,7 +782,7 @@ export default function TeacherDashboard() {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">$12,450</div>
+                <div className="text-2xl font-bold"> {formatCurrency(totalEarnings || 0) }</div>
                 <p className="text-xs text-muted-foreground">
                   +$2,100 from last month
                 </p>
@@ -197,7 +796,7 @@ export default function TeacherDashboard() {
                 <BarChart3 className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">4.8/5</div>
+                <div className="text-2xl font-bold">{totalRating}</div>
                 <p className="text-xs text-muted-foreground">
                   +0.2 from last month
                 </p>
@@ -213,13 +812,13 @@ export default function TeacherDashboard() {
                 <TabsTrigger value="reviews">Latest Reviews</TabsTrigger>
               </TabsList>
               <TabsContent value="courses">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {teacherCourses.map((course) => (
-                    <Card key={course.id} className="overflow-hidden">
+                <div className="grid gap-6 md:grid-cols-2  lg:grid-cols-3">
+                  {coursesWithStudentCounts.map((course) => (
+                    <Card key={course.id} className="overflow-hidden w-[330px]">
                       <div className="aspect-video w-full overflow-hidden">
                         <Image
-                          src={course.image || "/placeholder.svg"}
-                          alt={course.title}
+                          src={course.image_link || "/placeholder.svg"}
+                          alt={course.name}
                           width={400}
                           height={220}
                           className="h-full w-full object-cover"
@@ -227,10 +826,10 @@ export default function TeacherDashboard() {
                       </div>
                       <CardHeader className="p-4 pb-0">
                         <CardTitle className="text-lg">
-                          {course.title}
+                          {course.name}
                         </CardTitle>
                         <CardDescription>
-                          {course.students} students enrolled
+                           students enrolled {course.students}
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="p-4">
@@ -239,7 +838,7 @@ export default function TeacherDashboard() {
                             Revenue
                           </span>
                           <span className="text-sm font-medium">
-                            ${course.revenue}
+                            ${course.price}
                           </span>
                         </div>
                         <div className="flex items-center justify-between mb-2">
@@ -248,14 +847,14 @@ export default function TeacherDashboard() {
                           </span>
                           <div className="flex items-center">
                             <span className="text-sm font-medium mr-1">
-                              {course.rating}
+                              {course.average_rating || 0}
                             </span>
                             <BarChart3 className="h-4 w-4 text-muted-foreground" />
                           </div>
                         </div>
                         <div className="mt-4 flex items-center justify-between">
                           <span className="text-sm text-muted-foreground">
-                            Last updated: {course.lastUpdated}
+                            Last updated:  {new Date(course.updated_at).toLocaleDateString()}
                           </span>
                           <Button size="sm">Edit</Button>
                         </div>
@@ -264,8 +863,8 @@ export default function TeacherDashboard() {
                   ))}
                 </div>
               </TabsContent>
-              <TabsContent value="students">
-                <Card>
+              <TabsContent value="students" >
+                <Card >
                   <CardHeader>
                     <CardTitle>Recently Enrolled Students</CardTitle>
                     <CardDescription>
@@ -274,7 +873,7 @@ export default function TeacherDashboard() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {recentStudents.map((student) => (
+                      {/* {students.map((student) => (
                         <div
                           key={student.id}
                           className="flex items-center justify-between"
@@ -282,23 +881,45 @@ export default function TeacherDashboard() {
                           <div className="flex items-center gap-3">
                             <Image
                               src={student.avatar || "/placeholder.svg"}
-                              alt={student.name}
+                              alt={student.fullname}
                               width={40}
                               height={40}
                               className="rounded-full"
                             />
                             <div>
-                              <p className="font-medium">{student.name}</p>
+                              <p className="font-medium">{student.fullname}</p>
                               <p className="text-sm text-muted-foreground">
                                 Enrolled in: {student.course}
                               </p>
                             </div>
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {student.date}
+                            {student.updated_at}
                           </div>
                         </div>
-                      ))}
+                      ))} */}
+
+{students.map((student) => (
+  <div key={student.id} className="flex items-center justify-between">
+    <div className="flex items-center gap-3">
+      <Image
+        src={student.image_link}
+        alt={student.fullname}
+        width={40}
+        height={40}
+        className="rounded-full"
+      />
+      <div>
+        <p className="font-medium">{student.fullname}</p>
+        <p className="text-sm text-muted-foreground">
+          Enrolled in: {student.course}
+        </p>
+      </div>
+    </div>
+    <div className="text-sm text-muted-foreground">{student.courseUpdatedAt}</div>
+  </div>
+))}
+
                     </div>
                   </CardContent>
                 </Card>
@@ -311,8 +932,8 @@ export default function TeacherDashboard() {
                       Recent reviews from your students
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-6">
+                  <CardContent >
+                    <div className="space-y-6 ">
                       {latestReviews.map((review) => (
                         <div key={review.id} className="space-y-2">
                           <div className="flex items-center justify-between">
