@@ -163,7 +163,7 @@ export default function LoginPage() {
         className="absolute left-4 top-4 flex items-center gap-2 md:left-8 md:top-8"
       >
         <BookOpen className="h-6 w-6 text-primary" />
-        <span className="font-bold">EduLearn</span>
+        <span className="font-bold">A1 School</span>
       </Link>
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">

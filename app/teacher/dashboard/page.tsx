@@ -638,7 +638,7 @@ const [instructor, setInstructor] = useState<Instructor>({
         <Sidebar>
           <SidebarHeader className="flex items-center gap-2 px-4">
             <BookOpen className="h-6 w-6 text-primary" />
-            <span className="font-bold">EduLearn</span>
+            <span className="font-bold">A1 School</span>
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
@@ -650,46 +650,46 @@ const [instructor, setInstructor] = useState<Instructor>({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
+              {/* <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/teacher/courses">
                     <BookOpen className="h-4 w-4" />
                     <span>My Courses</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
+              </SidebarMenuItem> */}
+              {/* <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/teacher/students">
                     <Users className="h-4 w-4" />
                     <span>Students</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
+              </SidebarMenuItem> */}
+              {/* <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/teacher/analytics">
                     <BarChart3 className="h-4 w-4" />
                     <span>Analytics</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
+              </SidebarMenuItem> */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/teacher/earnings">
                     <DollarSign className="h-4 w-4" />
-                    <span>Earnings</span>
+                    <span>Wallet</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
+              {/* <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/teacher/messages">
                     <MessageSquare className="h-4 w-4" />
                     <span>Messages</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
+              </SidebarMenuItem> */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/teacher/profile">
@@ -730,7 +730,7 @@ const [instructor, setInstructor] = useState<Instructor>({
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
-                Teacher Dashboard
+                Instructor Dashboard
               </h1>
               <p className="text-muted-foreground">
                 Welcome back, {instructor.fullname} Here&apos;s your teaching summary.

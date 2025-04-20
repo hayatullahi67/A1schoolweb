@@ -125,7 +125,7 @@ const Footer = () => {
         </div>
         <div className="mt-10 flex flex-col items-center justify-between gap-4 border-t pt-6 sm:flex-row">
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} EduLearn. All rights reserved.
+            © {new Date().getFullYear()} A1 School. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <Link

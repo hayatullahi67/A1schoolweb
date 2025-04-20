@@ -7,7 +7,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "EduLearn - Learn Without Limits",
+  title: "A1 Scholls - Learn Without Limits",
   description: "A modern learning management system for students and teachers",
   keywords: [
     "education",

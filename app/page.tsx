@@ -26,6 +26,29 @@ import ParticlesBackground from "@/components/particles-background";
 import Header from "@/components/header";
 import Footer from "@/components/footer";
 
+export type Course = {
+  name: string;
+  description: string;
+  price: string;
+  id: string;
+  instructor_id: string;
+  instructor: {
+    fullname: string;
+    image_link: string | null;
+  };
+  average_rating: number | null;
+  category: {
+    name: string;
+  }[];
+  created_at: string;
+  updated_at: string;
+  image_link: string | null;
+  students: number | null;
+  discount: string;
+};
+
+
+
 export default function Home() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [visibleCategories, setVisibleCategories] = useState<typeof categories>(
@@ -34,7 +57,72 @@ export default function Home() {
   const [startIndex, setStartIndex] = useState(0);
   const itemsToShow = 6;
 
+
+  const [allCourses, setAllCourses] = useState<Course[]>([]);
+const [firstFourCourses, setFirstFourCourses] = useState<Course[]>([]);
+const [mostRecentCourse, setMostRecentCourse] = useState<Course[]>([]);
+
+
+// useEffect(() => {
+//   const fetchCourses = async () => {
+//     try {
+//       const response = await fetch("https://api.a1schools.org/courses");
+//       const data = await response.json();
+//       // console.log("data" , data)
+//    const res = data.data
+//       if (Array.isArray(res)) {
+//         // Sort by created date (assuming there's a date field)
+//         // const sortedCourses = [...data].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+//         const sortedCourses = [...data].sort(
+//           (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+//         );
+
+//         setAllCourses(data); 
+//         console.log("data" , data)
+//         setFirstFourCourses(data.slice(0, 4));
+//         setMostRecentCourse(sortedCourses[0]); // Most recent based on createdAt
+//       } else {
+//         console.error("Unexpected response structure", data);
+//       }
+//     } catch (error) {
+//       console.error("Error fetching courses:", error);
+//     }
+//   };
+
+//   fetchCourses();
+// }, []);
+
   // Filter categories based on active filter
+ 
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await fetch("https://api.a1schools.org/courses");
+        const data = await response.json();
+        const res = data.data;
+  
+        if (Array.isArray(res)) {
+          const sortedCourses = [...res].sort(
+            (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+          );
+             console.log("res", res.slice(0, 4))
+          setAllCourses(res); 
+          setFirstFourCourses(res.slice(0, 4));
+          setMostRecentCourse(sortedCourses);
+          console.log("resoted", sortedCourses)
+        } else {
+          console.error("Unexpected response structure", data);
+        }
+      } catch (error) {
+        console.error("Error fetching courses:", error);
+      }
+    };
+  
+    fetchCourses();
+  }, []);
+  
+ 
   useEffect(() => {
     if (activeCategory === "all") {
       setVisibleCategories(
@@ -123,7 +211,7 @@ export default function Home() {
                   className="flex flex-col gap-2 min-[400px]:flex-row"
                   variants={fadeInUp}
                 >
-                  <Link href="/courses">
+                  <Link href="/register">
                     <Button size="lg" className="w-full min-[400px]:w-auto">
                       Explore Courses
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -334,12 +422,13 @@ export default function Home() {
             <Tabs defaultValue="all" className="mt-8">
               <TabsList className="mx-auto mb-8">
                 <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="popular">Most Popular</TabsTrigger>
+                {/* <TabsTrigger value="popular">Most Popular</TabsTrigger> */}
                 <TabsTrigger value="new">New Courses</TabsTrigger>
-                <TabsTrigger value="trending">Trending</TabsTrigger>
+                {/* <TabsTrigger value="trending">Trending</TabsTrigger> */}
               </TabsList>
 
               <TabsContent value="all" className="space-y-8">
+                <Link href="/register">
                 <motion.div
                   className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                   initial="hidden"
@@ -347,14 +436,16 @@ export default function Home() {
                   viewport={{ once: true }}
                   variants={staggerContainer}
                 >
-                  {featuredCourses.map((course) => (
+                  {firstFourCourses.map((course) => (
                     <motion.div key={course.id} variants={fadeInUp}>
                       <CourseCard course={course} />
                     </motion.div>
                   ))}
                 </motion.div>
+                </Link>
+               
               </TabsContent>
-
+{/* 
               <TabsContent value="popular" className="space-y-8">
                 <motion.div
                   className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
@@ -369,7 +460,7 @@ export default function Home() {
                     </motion.div>
                   ))}
                 </motion.div>
-              </TabsContent>
+              </TabsContent> */}
 
               <TabsContent value="new">
                 <motion.div
@@ -379,15 +470,15 @@ export default function Home() {
                   viewport={{ once: true }}
                   variants={staggerContainer}
                 >
-                  {featuredCourses.slice(2, 6).map((course) => (
+                  {/* {featuredCourses.slice(2, 6).map((course) => (
                     <motion.div key={course.id} variants={fadeInUp}>
                       <CourseCard course={course} />
                     </motion.div>
-                  ))}
+                  ))} */}
                 </motion.div>
               </TabsContent>
 
-              <TabsContent value="trending">
+              {/* <TabsContent value="trending">
                 <motion.div
                   className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                   initial="hidden"
@@ -401,11 +492,11 @@ export default function Home() {
                     </motion.div>
                   ))}
                 </motion.div>
-              </TabsContent>
+              </TabsContent> */}
             </Tabs>
 
             <div className="flex justify-center mt-10">
-              <Link href="/courses">
+              <Link href="/register">
                 <Button size="lg" variant="outline">
                   View All Courses
                 </Button>

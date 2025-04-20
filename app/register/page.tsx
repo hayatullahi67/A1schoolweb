@@ -117,7 +117,7 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
         className="absolute left-4 top-4 flex items-center gap-2 md:left-8 md:top-8"
       >
         <BookOpen className="h-6 w-6 text-primary" />
-        <span className="font-bold">EduLearn</span>
+        <span className="font-bold">A1 School</span>
       </Link>
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
@@ -135,7 +135,7 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
         >
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="student">Student</TabsTrigger>
-            <TabsTrigger value="teacher">Teacher</TabsTrigger>
+            <TabsTrigger value="teacher">Instructor</TabsTrigger>
           </TabsList>
           <TabsContent value="student">
             <Card>
@@ -248,7 +248,7 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
               <CardHeader>
                 <CardTitle>Teacher Registration</CardTitle>
                 <CardDescription>
-                  Create your teacher account to start creating courses and
+                  Create your Instructor account to start creating courses and
                   teaching.
                 </CardDescription>
               </CardHeader>

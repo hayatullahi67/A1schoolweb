@@ -7,19 +7,10 @@ import { Star, Users } from "lucide-react";
 
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { Badge } from "./ui/badge";
+import { Course } from "@/app/page";
 
 interface CourseCardProps {
-  course: {
-    id: number;
-    title: string;
-    instructor: string;
-    rating: number;
-    students: number;
-    price: number;
-    image: string;
-    category: string;
-    level: string;
-  };
+  course: Course;
 }
 
 export default function CourseCard({ course }: CourseCardProps) {
@@ -28,39 +19,44 @@ export default function CourseCard({ course }: CourseCardProps) {
       <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
         <Card className="h-full overflow-hidden transition-all hover:shadow-md">
           <div className="aspect-video w-full overflow-hidden">
-            <Image
-              src={course.image || "/placeholder.svg"}
-              alt={course.title}
+            {/* <Image
+              src={course.image_link || "/placeholder.svg"}
+              alt={course.name}
               width={400}
               height={220}
               className="h-full w-full object-cover transition-transform hover:scale-105"
-            />
+            /> */}
+            <img src={course.image_link || "/placeholder.svg"}
+              alt={course.name}
+              width={400}
+              height={220}
+              className="h-full w-full object-cover transition-transform hover:scale-105" />
           </div>
           <CardContent className="p-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Badge variant="outline" className="bg-primary/10 text-primary">
-                  {course.category}
+                {course.category[0]?.name ?? "Uncategorized"}
                 </Badge>
                 <span className="text-sm text-muted-foreground">
-                  {course.level}
+                  {/* {course.level} */}
                 </span>
               </div>
-              <h3 className="font-semibold line-clamp-2">{course.title}</h3>
+              <h3 className="font-semibold line-clamp-2">{course.name}</h3>
               <p className="text-sm text-muted-foreground">
-                By {course.instructor}
+                By {course.instructor.fullname}
               </p>
               <div className="flex items-center gap-2">
                 <div className="flex items-center">
                   <Star className="h-4 w-4 fill-primary text-primary" />
                   <span className="ml-1 text-sm font-medium">
-                    {course.rating}
+                    {course.average_rating}
                   </span>
                 </div>
                 <div className="flex items-center">
                   <Users className="h-4 w-4 text-muted-foreground" />
                   <span className="ml-1 text-sm text-muted-foreground">
-                    {course.students.toLocaleString()}
+                    {/* {course.students.toLocaleString()} */}
                   </span>
                 </div>
               </div>
@@ -69,7 +65,7 @@ export default function CourseCard({ course }: CourseCardProps) {
           <CardFooter className="p-4 pt-0">
             <div className="flex w-full items-center justify-between">
               <span className="text-lg font-bold">
-                ${course.price.toFixed(2)}
+                ${course.price}
               </span>
               <Badge className="transition-colors hover:bg-primary/90">
                 Enroll Now

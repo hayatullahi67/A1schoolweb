@@ -237,6 +237,36 @@ setCourseid(courseIds)
       fetchallCourses();
     }
   }, [token]);
+
+  const enrollCourse = async (courseId : string) => {
+    try {
+      const response = await fetch(`https://api.a1schools.org/courses/${courseId}/enroll`, {
+        method: "POST",
+        headers: {
+          'Authorization': `Bearer ${token}`, 
+          'Content-Type': 'application/json',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to enroll course");
+      }
+  
+      const data = await response.json();
+      console.log("enrolldata", data);
+
+      const paymentLink = data?.data?.link;
+      if (paymentLink) {
+        window.location.href = paymentLink; // takes the user to the Flutterwave payment page
+      } else {
+        console.warn("No payment link found in response");
+      }
+  
+    } catch (error) {
+      console.error("Error enrolling course:", error);
+    }
+  };
+  
   
   return (
     <SidebarProvider>
@@ -244,7 +274,7 @@ setCourseid(courseIds)
         <Sidebar>
           <SidebarHeader className="flex items-center gap-2 px-4">
             <BookOpen className="h-6 w-6 text-primary" />
-            <span className="font-bold">EduLearn</span>
+            <span className="font-bold">A1 School</span>
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
@@ -531,7 +561,7 @@ setCourseid(courseIds)
                         <div className="mt-4 flex items-center justify-between">
                           <span className="text-sm text-muted-foreground">
                           </span>
-                          <Button size="sm">Enroll</Button>
+                          <Button  onClick={() => enrollCourse(course.id)} size="sm">Enroll</Button>
                         </div>
                       </CardContent>
                     </Card>
