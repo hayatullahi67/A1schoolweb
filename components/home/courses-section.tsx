@@ -75,11 +75,11 @@ export default function CoursesSection({
               viewport={{ once: true }}
               variants={staggerContainer}
             >
-              {featuredCourses.map((course) => (
+              {/* {featuredCourses.map((course) => (
                 <motion.div key={course.id} variants={fadeInUp}>
                   <CourseCard course={course} />
                 </motion.div>
-              ))}
+              ))} */}
             </motion.div>
           </TabsContent>
 
@@ -91,11 +91,11 @@ export default function CoursesSection({
               viewport={{ once: true }}
               variants={staggerContainer}
             >
-              {featuredCourses.slice(0, 4).map((course) => (
+              {/* {featuredCourses.slice(0, 4).map((course) => (
                 <motion.div key={course.id} variants={fadeInUp}>
                   <CourseCard course={course} />
                 </motion.div>
-              ))}
+              ))} */}
             </motion.div>
           </TabsContent>
 
@@ -107,11 +107,11 @@ export default function CoursesSection({
               viewport={{ once: true }}
               variants={staggerContainer}
             >
-              {featuredCourses.slice(2, 6).map((course) => (
+              {/* {featuredCourses.slice(2, 6).map((course) => (
                 <motion.div key={course.id} variants={fadeInUp}>
                   <CourseCard course={course} />
                 </motion.div>
-              ))}
+              ))} */}
             </motion.div>
           </TabsContent>
 
@@ -123,11 +123,11 @@ export default function CoursesSection({
               viewport={{ once: true }}
               variants={staggerContainer}
             >
-              {featuredCourses.slice(1, 5).map((course) => (
+              {/* {featuredCourses.slice(1, 5).map((course) => (
                 <motion.div key={course.id} variants={fadeInUp}>
                   <CourseCard course={course} />
                 </motion.div>
-              ))}
+              ))} */}
             </motion.div>
           </TabsContent>
         </Tabs>
