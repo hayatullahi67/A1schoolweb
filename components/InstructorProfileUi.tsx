@@ -2,7 +2,9 @@ import React, { useState, ChangeEvent } from "react";
 import { NextPage } from "next";
 
 const ProfilePage: NextPage = () => {
-  const [instructorName, setInstructorName] = useState<string>("John Doe");
+  // Mock data - replace with real user data from API
+  const [instructorName] = useState<string>("John Doe");
+  const [userEmail] = useState<string>("john.doe@example.com");
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -42,7 +44,7 @@ const ProfilePage: NextPage = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
-      {/* Instructor Name */}
+      {/* Instructor Profile */}
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-2">Instructor Profile</h2>
         <div className="flex items-center space-x-4">
@@ -60,7 +62,7 @@ const ProfilePage: NextPage = () => {
           <div>
             <h3 className="text-xl font-medium">{instructorName}</h3>
             <label className="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700">
-              Change Image n{" "}
+              Change Image
               <input
                 type="file"
                 accept="image/*"
@@ -68,6 +70,37 @@ const ProfilePage: NextPage = () => {
                 className="hidden"
               />
             </label>
+          </div>
+        </div>
+      </section>
+
+      {/* Settings - Read-Only */}
+      <section className="mb-8">
+        <h2 className="text-2xl font-semibold mb-4">Settings</h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="flex flex-col">
+            <label htmlFor="name" className="font-medium mb-1">
+              Name
+            </label>
+            <input
+              id="name"
+              type="text"
+              value={instructorName}
+              disabled
+              className="border rounded-lg p-2 bg-gray-100 cursor-not-allowed"
+            />
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="email" className="font-medium mb-1">
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={userEmail}
+              disabled
+              className="border rounded-lg p-2 bg-gray-100 cursor-not-allowed"
+            />
           </div>
         </div>
       </section>
