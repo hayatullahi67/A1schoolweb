@@ -573,7 +573,7 @@ setCourseid(courseIds)
                           height={220}
                           className="h-full w-full object-cover"
                         /> */}
-                        <img src={course.image_link}  width={400}
+                        <Image src={course.image_link}  width={400}
                           height={220}  className="h-full w-full object-cover" alt="" />
                       </div>
                       <CardHeader className="p-4 pb-0">

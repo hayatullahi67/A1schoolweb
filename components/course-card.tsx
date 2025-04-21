@@ -26,7 +26,7 @@ export default function CourseCard({ course }: CourseCardProps) {
               height={220}
               className="h-full w-full object-cover transition-transform hover:scale-105"
             /> */}
-            <img src={course.image_link || "/placeholder.svg"}
+            <Image src={course.image_link || "/placeholder.svg"}
               alt={course.name}
               width={400}
               height={220}

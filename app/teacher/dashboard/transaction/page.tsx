@@ -24,6 +24,7 @@ import {
   User,
   Users,
 } from "lucide-react";
+import Image from "next/image";
 
 
 
@@ -237,7 +238,7 @@ export default function Home() {
           </SidebarContent>
           <SidebarFooter className="p-4">
             <div className="flex items-center gap-3">
-              <img
+              <Image
                 src="/placeholder.svg?height=40&width=40"
                 width={40}
                 height={40}
