@@ -469,7 +469,7 @@ setCourseid(courseIds)
                   {
                    courses.length === 0 ? (
                     <p className="text-muted-foreground text-center mt-8">
-                     You haven't taken any courses yet.
+                     You have not taken any courses yet.
                     </p>
                   ) : 
                   

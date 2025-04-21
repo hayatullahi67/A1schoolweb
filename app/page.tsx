@@ -151,12 +151,12 @@ const [mostRecentCourse, setMostRecentCourse] = useState<Course[]>([]);
   };
 
   // Auto-scroll categories
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [startIndex]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     nextSlide();
+  //   }, 3000);
+  //   return () => clearInterval(interval);
+  // }, [startIndex]);
 
   const fadeInUp = {
     hidden: { opacity: 0, y: 20 },

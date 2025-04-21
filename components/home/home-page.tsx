@@ -48,12 +48,12 @@ export default function Home() {
   };
 
   // Auto-scroll categories
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextSlide();
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [startIndex]);
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     nextSlide();
+  //   }, 3000);
+  //   return () => clearInterval(interval);
+  // }, [startIndex]);
 
   return (
     <div className="flex min-h-screen flex-col">

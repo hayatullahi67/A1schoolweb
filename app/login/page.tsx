@@ -390,7 +390,7 @@ export default function LoginPage() {
           </TabsContent>
         </Tabs>
         <p className="px-8 text-center text-sm text-muted-foreground">
-          Don't have an account?
+          Don not have an account?
           <Link
             href="/register"
             className="text-primary underline-offset-4 hover:underline"
