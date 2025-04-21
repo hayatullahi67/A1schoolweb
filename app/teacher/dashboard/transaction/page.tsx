@@ -153,107 +153,107 @@ export default function Home() {
 
 
     <Sidebar>
-          <SidebarHeader className="flex items-center gap-2 px-4">
-            <BookOpen className="h-6 w-6 text-primary" />
-            <span className="font-bold">A1 School</span>
-          </SidebarHeader>
-          <SidebarContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild isActive>
-                  <Link href="/teacher/dashboard">
-                    <LayoutDashboard className="h-4 w-4" />
-                    <span>Dashboard</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              {/* <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/teacher/courses">
-                    <BookOpen className="h-4 w-4" />
-                    <span>My Courses</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem> */}
-              {/* <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/teacher/students">
-                    <Users className="h-4 w-4" />
-                    <span>Students</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem> */}
-              {/* <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/teacher/analytics">
-                    <BarChart3 className="h-4 w-4" />
-                    <span>Analytics</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem> */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/teacher/dashboard/transaction">
-                    <DollarSign className="h-4 w-4" />
-                    <span>Wallet</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              {/* <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/teacher/messages">
-                    <MessageSquare className="h-4 w-4" />
-                    <span>Messages</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem> */}
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/teacher/profile">
-                    <User className="h-4 w-4" />
-                    <span>Profile</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild>
-                  <Link href="/teacher/settings">
-                    <Settings className="h-4 w-4" />
-                    <span>Settings</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-
-              <SidebarMenuItem>
-                    <SidebarMenuButton asChild>
-                     <button  onClick={handleLogout}>
-
-                     <span  className="text-[red]">Log Out</span>
-
-                     </button>
-                      
+              <SidebarHeader className="flex items-center gap-2 px-4">
+                <BookOpen className="h-6 w-6 text-primary" />
+                <span className="font-bold">A1 School</span>
+              </SidebarHeader>
+              <SidebarContent>
+                <SidebarMenu>
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild isActive>
+                      <Link href="/teacher/dashboard">
+                        <LayoutDashboard className="h-4 w-4" />
+                        <span>Dashboard</span>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarContent>
-          <SidebarFooter className="p-4">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/placeholder.svg?height=40&width=40"
-                width={40}
-                height={40}
-                alt="User avatar"
-                className="rounded-full"
-              />
-              <div className="flex flex-col">
-                <span className="text-sm font-medium">{instructor.fullname}</span>
-                <span className="text-xs text-muted-foreground">
-                  {instructor.email}
-                </span>
-              </div>
-            </div>
-          </SidebarFooter>
-        </Sidebar>
+                  {/* <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link href="/teacher/courses">
+                        <BookOpen className="h-4 w-4" />
+                        <span>My Courses</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem> */}
+                  {/* <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link href="/teacher/students">
+                        <Users className="h-4 w-4" />
+                        <span>Students</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem> */}
+                  {/* <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link href="/teacher/analytics">
+                        <BarChart3 className="h-4 w-4" />
+                        <span>Analytics</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem> */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link href="/teacher/dashboard/transaction">
+                        <DollarSign className="h-4 w-4" />
+                        <span>Wallet</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  {/* <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link href="/teacher/messages">
+                        <MessageSquare className="h-4 w-4" />
+                        <span>Messages</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem> */}
+                  <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link href="/teacher/dashboard/profile">
+                        <User className="h-4 w-4" />
+                        <span>Profile</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                  {/* <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                      <Link href="/teacher/settings">
+                        <Settings className="h-4 w-4" />
+                        <span>Settings</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem> */}
+    
+                  <SidebarMenuItem>
+                        <SidebarMenuButton asChild>
+                         <button  onClick={handleLogout}>
+    
+                         <span  className="text-[red]">Log Out</span>
+    
+                         </button>
+                          
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                </SidebarMenu>
+              </SidebarContent>
+              <SidebarFooter className="p-4">
+                <div className="flex items-center gap-3">
+                  <Image
+                    src="/placeholder.svg?height=40&width=40"
+                    width={40}
+                    height={40}
+                    alt="User avatar"
+                    className="rounded-full"
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-sm font-medium">{instructor.fullname}</span>
+                    <span className="text-xs text-muted-foreground">
+                      {instructor.email}
+                    </span>
+                  </div>
+                </div>
+              </SidebarFooter>
+            </Sidebar>
      <div className="pb-20 max-w-md mx-auto">
       {/* {transactions.map((tx, idx) => (
         <TransactionItem key={idx} {...tx} />

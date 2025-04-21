@@ -720,20 +720,20 @@ const [instructor, setInstructor] = useState<Instructor>({
               </SidebarMenuItem> */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/teacher/profile">
+                  <Link href="/teacher/dashboard/profile">
                     <User className="h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
+              {/* <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/teacher/settings">
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
+              </SidebarMenuItem> */}
 
               <SidebarMenuItem>
                     <SidebarMenuButton asChild>
