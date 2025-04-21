@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
  import { useEffect , useRef, useState } from "react";
 
  import { X } from 'lucide-react';
+import Image from "next/image";
 
  type Question = {
     id: number;
@@ -683,7 +684,7 @@ return (
         onClick={() => document.getElementById('thumbnail-input')?.click()}
       >
         {imagePreview ? (
-          <img src={imagePreview} alt="Thumbnail Preview" className="object-cover h-full w-full rounded-md" />
+          <Image src={imagePreview} alt="Thumbnail Preview" className="object-cover h-full w-full rounded-md" />
         ) : (
           <div className="text-gray-400 flex flex-col items-center">
             <svg
