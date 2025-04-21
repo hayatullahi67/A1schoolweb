@@ -92,11 +92,11 @@ export function CourseReviews({ course }: { course: CourseType }) {
                   </div>
                 </div>
                 <p className="text-muted-foreground">
-                  This course is amazing! I&apos;ve tried several web
+                  This course is amazing! I have tried several web
                   development courses before, but this one is by far the best.
                   The instructor explains everything clearly and provides
                   practical examples that make it easy to understand complex
-                  concepts. I&apos;ve already built several projects following
+                  concepts. I have already built several projects following
                   along with the course, and I feel much more confident in my
                   skills now.
                 </p>

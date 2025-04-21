@@ -772,7 +772,7 @@ const [instructor, setInstructor] = useState<Instructor>({
                 Instructor Dashboard
               </h1>
               <p className="text-muted-foreground">
-                Welcome back, {instructor.fullname} Here&apos;s your teaching summary.
+                Welcome back, {instructor.fullname} Here is your teaching summary.
               </p>
             </div>
             <div className="flex items-center gap-4">

@@ -42,7 +42,7 @@ export function CourseInstructor() {
           teaching web development.
         </p>
         <p className="mt-4 text-muted-foreground">
-          When he&apos;s not coding or teaching, John enjoys hiking,
+          When he is not coding or teaching, John enjoys hiking,
           photography, and spending time with his family. He believes that
           anyone can learn to code with the right guidance and is committed to
           helping his students achieve their goals.

@@ -389,7 +389,7 @@ setCourseid(courseIds)
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
               <p className="text-muted-foreground">
-                Welcome back, {student.fullname}! Here&apos;s your learning summary.
+                Welcome back, {student.fullname}! Here is your learning summary.
               </p>
             </div>
             <div className="flex items-center gap-4">

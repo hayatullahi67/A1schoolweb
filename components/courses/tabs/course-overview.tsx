@@ -17,7 +17,7 @@ export function CourseOverview({ course }: { course: CourseType }) {
             <p className="text-muted-foreground">{course.description}</p>
           </div>
           <div>
-            <h2 className="mb-4 text-2xl font-bold">What You&apos;ll Learn</h2>
+            <h2 className="mb-4 text-2xl font-bold">What You will Learn</h2>
             <ul className="grid gap-3 sm:grid-cols-2">
               {course.whatYouWillLearn.map((item, index) => (
                 <li key={index} className="flex items-start">
