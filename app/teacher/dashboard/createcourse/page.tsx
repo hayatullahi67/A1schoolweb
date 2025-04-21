@@ -40,11 +40,7 @@ interface VideoUploadProps {
     id: string;
   };
 
-  const CreateCourse: React.FC<VideoUploadProps> = ({
-
-    onTitleChange,
-    defaultTitle = '',
-  }) => {
+  const CreateCourse: React.FC = () =>  {
            
     const [courseName, setCourseName] = useState('');
 const [coursePrice, setCoursePrice] = useState('');
