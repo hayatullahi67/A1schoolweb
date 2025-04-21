@@ -632,6 +632,34 @@ const [instructor, setInstructor] = useState<Instructor>({
         }).format(amount)
       }
 
+      const handleLogout = async () => {
+        try {
+          const response = await fetch(
+            `https://api.a1schools.org/auth/logout/${instructorId}`,
+            {
+              method: 'GET', 
+              headers: {
+                'Content-Type': 'application/json',
+                
+              },
+            }
+          );
+      
+          if (response.ok) {
+            console.log('Logout successful');
+            // Optional: Clear any user data from localStorage/sessionStorage
+            // Redirect to login/home page
+            window.location.href = '/login';
+          } else {
+            const errorData = await response.json();
+            console.error('Logout failed:', errorData.message);
+          }
+        } catch (error) {
+          console.error('Network error during logout:', error);
+        }
+      };
+      
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen">
@@ -676,7 +704,7 @@ const [instructor, setInstructor] = useState<Instructor>({
               </SidebarMenuItem> */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/teacher/earnings">
+                  <Link href="/teacher/dashboard/transaction">
                     <DollarSign className="h-4 w-4" />
                     <span>Wallet</span>
                   </Link>
@@ -706,6 +734,17 @@ const [instructor, setInstructor] = useState<Instructor>({
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                     <button  onClick={handleLogout}>
+
+                     <span  className="text-[red]">Log Out</span>
+
+                     </button>
+                      
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter className="p-4">
@@ -738,10 +777,12 @@ const [instructor, setInstructor] = useState<Instructor>({
             </div>
             <div className="flex items-center gap-4">
               {/* <Button variant="outline">View Analytics</Button> */}
+              <Link href='/teacher/dashboard/createcourse'>
               <Button>
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Create Course
               </Button>
+              </Link>
             </div>
           </div>
 

@@ -267,6 +267,33 @@ setCourseid(courseIds)
     }
   };
   
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(
+        `https://api.a1schools.org/auth/logout/${studentId}`,
+        {
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+            
+          },
+        }
+      );
+  
+      if (response.ok) {
+        console.log('Logout successful');
+        // Optional: Clear any user data from localStorage/sessionStorage
+        // Redirect to login/home page
+        window.location.href = '/login';
+      } else {
+        const errorData = await response.json();
+        console.error('Logout failed:', errorData.message);
+      }
+    } catch (error) {
+      console.error('Network error during logout:', error);
+    }
+  };
   
   return (
     <SidebarProvider>
@@ -326,6 +353,17 @@ setCourseid(courseIds)
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
+
+              <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                     <button  onClick={handleLogout}>
+
+                     <span  className="text-[red]">Log Out</span>
+
+                     </button>
+                      
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter className="p-4">
@@ -355,12 +393,12 @@ setCourseid(courseIds)
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <Button variant="outline">Browse Courses</Button>
-              <Button>Continue Learning</Button>
+              {/* <Button variant="outline">Browse Courses</Button>
+              <Button>Continue Learning</Button> */}
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
                 <CardTitle className="text-sm font-medium">
