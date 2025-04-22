@@ -15,8 +15,9 @@ interface CourseCardProps {
 
 export default function CourseCard({ course }: CourseCardProps) {
   return (
-    <Link href="/register">
+
       <motion.div whileHover={{ y: -5 }} transition={{ duration: 0.2 }}>
+            
         <Card className="h-full overflow-hidden transition-all hover:shadow-md">
           <div className="aspect-video w-full overflow-hidden">
             {/* <Image
@@ -26,12 +27,14 @@ export default function CourseCard({ course }: CourseCardProps) {
               height={220}
               className="h-full w-full object-cover transition-transform hover:scale-105"
             /> */}
+            
             <Image src={course.image_link || "/placeholder.svg"}
               alt={course.name}
               width={400}
               height={220}
               className="h-full w-full object-cover transition-transform hover:scale-105" />
           </div>
+          
           <CardContent className="p-4">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -72,8 +75,9 @@ export default function CourseCard({ course }: CourseCardProps) {
               </Badge> */}
             </div>
           </CardFooter>
+          
         </Card>
       </motion.div>
-    </Link>
+   
   );
 }
