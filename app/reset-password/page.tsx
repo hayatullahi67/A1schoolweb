@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { BookOpen, Eye, EyeOff, Lock, Key } from "lucide-react";
+import { Suspense } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -94,7 +95,8 @@ export default function ResetPasswordPage() {
 
   if (!email) {
     return (
-      <div className="container flex h-screen w-screen flex-col items-center justify-center">
+      <Suspense>
+<div className="container flex h-screen w-screen flex-col items-center justify-center">
         <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
           <Card>
             <CardHeader>
@@ -111,6 +113,9 @@ export default function ResetPasswordPage() {
           </Card>
         </div>
       </div>
+
+      </Suspense>
+      
     );
   }
 
