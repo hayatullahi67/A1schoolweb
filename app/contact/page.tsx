@@ -12,16 +12,17 @@ import {
 } from "react-icons/fa";
 import { FiChevronRight } from "react-icons/fi";
 import Header from "@/components/header";
+import Footer from "@/components/footer";
 
 export default function ContactPage() {
   return (
    <>
    <Header />
-    <div className="bg-white text-gray-800">
+    <div className="bg-white w-[100%] text-gray-800">
    {/* Main Content */}
-   <main className="container mx-auto px-6 py-12 space-y-16">
+   <main className="  py-12 ">
      {/* Intro Text */}
-     <section className="text-center">
+     <section className="text-center  mx-auto ">
        <h1 className="text-4xl md:text-5xl font-bold text-blue-600 mb-4">
          Get in Touch with Us Today!
        </h1>
@@ -145,7 +146,7 @@ export default function ContactPage() {
      </section>
 
      {/* Response & Privacy */}
-     <section className="grid md:grid-cols-2 gap-6">
+     <section className="grid mx-auto w-[60%] md:grid-cols-2 gap-6">
        <div className="bg-gray-50 p-6 rounded-lg">
          <h3 className="font-semibold mb-2">Our Response</h3>
          <p className="text-gray-600">
@@ -182,7 +183,7 @@ export default function ContactPage() {
      </section>
 
      {/* CTA Banner */}
-     <section className="bg-blue-600 text-white py-12 rounded-lg text-center">
+     <section className="bg-[blue] text-white py-12 mt-[30px] w-[100%] text-center">
        <h2 className="text-3xl font-bold mb-4">
          Ready to Boost Your Digital Presence?
        </h2>
@@ -192,13 +193,13 @@ export default function ContactPage() {
        </p>
        <div className="flex justify-center space-x-4">
          <a
-           href="/get-started"
-           className="px-6 py-3 bg-white text-blue-600 font-semibold rounded-lg hover:bg-gray-100"
+           href="/register"
+           className="px-6 py-3 bg-white text-[blue] font-semibold rounded-lg hover:bg-gray-100"
          >
            Get Started
          </a>
          <a
-           href="/consultation"
+           href="/register"
            className="px-6 py-3 border border-white rounded-lg hover:bg-white/20"
          >
            Free Consultation
@@ -207,10 +208,12 @@ export default function ContactPage() {
      </section>
 
      {/* Logo Showcase */}
-     <section className="flex justify-center mt-12">
+     {/* <section className="flex justify-center mt-12">
        <Image src="/logo-large.svg" alt="A1 logo" width={300} height={80} />
-     </section>
+     </section> */}
    </main>
- </div></>
+ </div>
+ <Footer />
+ </>
   );
 }

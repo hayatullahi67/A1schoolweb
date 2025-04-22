@@ -1,8 +1,6 @@
 
 
 
-
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -21,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import Header from "@/components/header";
 
 interface Role {
   name: string;
@@ -162,8 +161,18 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
+
+  // const handleGoogleLogin = () => {
+  //   const userTypeParam = userType;
+  //   const googleLoginUrl = `https://api.a1schools.org/auth/google?user_type=${
+  //     userTypeParam === "teacher" ? "instructor" : userTypeParam
+  //   }`;
+
+  //   window.location.href = googleLoginUrl;
+  // };
   
   // Component for rendering password requirements
+  
   const PasswordRequirements = () => (
     <div className="mt-2 space-y-1 text-sm">
       <div className={`flex items-center gap-1 ${validations.minLength ? 'text-green-500' : 'text-red-500'}`}>
@@ -186,14 +195,16 @@ export default function LoginPage() {
   );
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      <Link
+    <>
+    <Header />
+    <div className="container flex py-[50px]  w-screen flex-col items-center justify-center">
+      {/* <Link
         href="/"
         className="absolute left-4 top-4 flex items-center gap-2 md:left-8 md:top-8"
       >
         <BookOpen className="h-6 w-6 text-primary" />
         <span className="font-bold">A1 School</span>
-      </Link>
+      </Link> */}
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -284,9 +295,13 @@ export default function LoginPage() {
                   <span className="text-xs text-muted-foreground">OR</span>
                   <div className="flex-1 border-t"></div>
                 </div>
-                <Button variant="outline" className="w-full">
-                  Sign in with Google
-                </Button>
+                <Button
+                   variant="outline"
+                   className="w-full"
+                  //  onClick={handleGoogleLogin}
+                 >
+                   Sign in with Google
+                 </Button>
               </CardFooter>
             </Card>
           </TabsContent>
@@ -362,9 +377,13 @@ export default function LoginPage() {
                   <span className="text-xs text-muted-foreground">OR</span>
                   <div className="flex-1 border-t"></div>
                 </div>
-                <Button variant="outline" className="w-full">
-                  Sign in with Google
-                </Button>
+                <Button
+                   variant="outline"
+                   className="w-full"
+                  //  onClick={handleGoogleLogin}
+                 >
+                   Sign in with Google
+                 </Button>
               </CardFooter>
             </Card>
           </TabsContent>
@@ -380,5 +399,6 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+    </>
   );
 }
