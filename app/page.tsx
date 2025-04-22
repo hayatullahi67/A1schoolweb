@@ -4,6 +4,10 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import girl from "@/public/images/girl.jpeg"
+import uxdesigner from "@/public/images/uxdesigner.jpeg"
+import david from "@/public/images/david.jpeg"
+
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -661,7 +665,7 @@ const [mostRecentCourse, setMostRecentCourse] = useState<Course[]>([]);
                     Sign Up Now
                   </Button>
                 </Link>
-                <Link href="/courses">
+                <Link href="/register">
                   <Button
                     size="lg"
                     variant="outline"
@@ -822,7 +826,7 @@ const testimonials = [
     role: "Web Developer",
     content:
       "The courses on this platform completely transformed my career. I went from knowing nothing about coding to landing a full-time developer job in just 6 months!",
-    avatar: "/placeholder.svg?height=80&width=80",
+    avatar: david,
     rating: 5,
   },
   {
@@ -831,7 +835,7 @@ const testimonials = [
     role: "UX Designer",
     content:
       "The design courses here are exceptional. The instructors are industry professionals who provide real-world insights and practical knowledge.",
-    avatar: "/placeholder.svg?height=80&width=80",
+    avatar: girl,
     rating: 5,
   },
   {
@@ -840,7 +844,7 @@ const testimonials = [
     role: "Marketing Specialist",
     content:
       "I've taken several marketing courses, and they've all been incredibly valuable. The content is up-to-date and relevant to today's digital landscape.",
-    avatar: "/placeholder.svg?height=80&width=80",
+    avatar: uxdesigner,
     rating: 4,
   },
 ];

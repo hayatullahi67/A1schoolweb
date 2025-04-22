@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { BookOpen, Eye, EyeOff } from "lucide-react";
+import { BookOpen, Eye, EyeOff, Check, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,32 +17,117 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
+interface PasswordValidation {
+  minLength: boolean;
+  hasUppercase: boolean;
+  hasNumber: boolean;
+  hasSpecial: boolean;
+}
+
 export default function RegisterPage() {
   const [studentFirstName, setStudentFirstName] = useState("");
-const [studentLastName, setStudentLastName] = useState("");
-const [studentEmail, setStudentEmail] = useState("");
-const [studentPassword, setStudentPassword] = useState("");
-const [confirmstudentPassword, setConfirmStudentPassword] = useState("");
+  const [studentLastName, setStudentLastName] = useState("");
+  const [studentEmail, setStudentEmail] = useState("");
+  const [studentPassword, setStudentPassword] = useState("");
+  const [confirmStudentPassword, setConfirmStudentPassword] = useState("");
+  const [studentError, setStudentError] = useState("");
+  const [studentLoading, setStudentLoading] = useState(false);
 
-
-const [teachertFirstName, setTeacherFirstName] = useState("");
-const [teacherLastName, setTeacherLastName] = useState("");
-const [teacherEmail, setTeacherEmail] = useState("");
-const [teacherPassword, setTeacherPassword] = useState("");
-const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
+  const [teacherFirstName, setTeacherFirstName] = useState("");
+  const [teacherLastName, setTeacherLastName] = useState("");
+  const [teacherEmail, setTeacherEmail] = useState("");
+  const [teacherPassword, setTeacherPassword] = useState("");
+  const [confirmTeacherPassword, setConfirmTeacherPassword] = useState("");
+  const [teacherError, setTeacherError] = useState("");
+  const [teacherLoading, setTeacherLoading] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
   const [userType, setUserType] = useState("student");
+  
+  // Password validation states
+  const [studentValidations, setStudentValidations] = useState<PasswordValidation>({
+    minLength: false,
+    hasUppercase: false,
+    hasNumber: false,
+    hasSpecial: false
+  });
+  
+  const [teacherValidations, setTeacherValidations] = useState<PasswordValidation>({
+    minLength: false,
+    hasUppercase: false,
+    hasNumber: false,
+    hasSpecial: false
+  });
+  
+  const [isStudentPasswordValid, setIsStudentPasswordValid] = useState(false);
+  const [isTeacherPasswordValid, setIsTeacherPasswordValid] = useState(false);
 
+  // Validate student password on change
+  useEffect(() => {
+    validateStudentPassword(studentPassword);
+  }, [studentPassword]);
+
+  // Validate teacher password on change
+  useEffect(() => {
+    validateTeacherPassword(teacherPassword);
+  }, [teacherPassword]);
+
+  // Password validation functions
+  const validateStudentPassword = (value: string) => {
+    const newValidations = {
+      minLength: value.length >= 8,
+      hasUppercase: /[A-Z]/.test(value),
+      hasNumber: /\d/.test(value),
+      hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)
+    };
+    
+    setStudentValidations(newValidations);
+    setIsStudentPasswordValid(Object.values(newValidations).every(val => val === true));
+  };
+
+  const validateTeacherPassword = (value: string) => {
+    const newValidations = {
+      minLength: value.length >= 8,
+      hasUppercase: /[A-Z]/.test(value),
+      hasNumber: /\d/.test(value),
+      hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)
+    };
+    
+    setTeacherValidations(newValidations);
+    setIsTeacherPasswordValid(Object.values(newValidations).every(val => val === true));
+  };
 
   const registerStudent = async () => {
+    // Clear previous errors
+    setStudentError("");
+    
+    // Validate password meets requirements
+    if (!isStudentPasswordValid) {
+      setStudentError("Password does not meet all requirements");
+      return;
+    }
+    
+    // Validate passwords match
+    if (studentPassword !== confirmStudentPassword) {
+      setStudentError("Passwords do not match");
+      return;
+    }
+    
+    // Validate required fields
+    if (!studentFirstName || !studentLastName || !studentEmail) {
+      setStudentError("All fields are required");
+      return;
+    }
+    
+    setStudentLoading(true);
+    
     const fullname = `${studentFirstName} ${studentLastName}`;
     const payload = {
       fullname,
       last_name: studentLastName,
       email: studentEmail,
       password: studentPassword,
-      confirm_password: confirmstudentPassword
+      confirm_password: confirmStudentPassword
     };
   
     try {
@@ -58,27 +143,51 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
   
       if (res.ok) {
         console.log("Registration successful:", data);
-        // Redirect to login or show success message
-        window.location.href = "/login"; // Adjust URL as needed
-
+        // Redirect to login
+        window.location.href = "/login";
       } else {
         console.error("Registration failed:", data);
-        // Show error message to user
+        setStudentError(data.message || "Registration failed. Please try again.");
       }
     } catch (error) {
       console.error("Error during registration:", error);
+      setStudentError("An error occurred. Please try again.");
+    } finally {
+      setStudentLoading(false);
     }
   };
   
-
   const registerTeacher = async () => {
-    const fullname = `${teachertFirstName} ${teacherLastName}`;
+    // Clear previous errors
+    setTeacherError("");
+    
+    // Validate password meets requirements
+    if (!isTeacherPasswordValid) {
+      setTeacherError("Password does not meet all requirements");
+      return;
+    }
+    
+    // Validate passwords match
+    if (teacherPassword !== confirmTeacherPassword) {
+      setTeacherError("Passwords do not match");
+      return;
+    }
+    
+    // Validate required fields
+    if (!teacherFirstName || !teacherLastName || !teacherEmail) {
+      setTeacherError("All fields are required");
+      return;
+    }
+    
+    setTeacherLoading(true);
+    
+    const fullname = `${teacherFirstName} ${teacherLastName}`;
     const payload = {
       fullname,
       last_name: teacherLastName,
       email: teacherEmail,
       password: teacherPassword,
-      confirm_password: confirmteacherPassword
+      confirm_password: confirmTeacherPassword
     };
 
     try {
@@ -94,24 +203,47 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
   
       if (res.ok) {
         console.log("Registration successful:", data);
-        // Redirect to login or show success message
-        window.location.href = "/login"; // Adjust URL as needed
-
+        window.location.href = "/login";
       } else {
         console.error("Registration failed:", data);
-        // Show error message to user
+        setTeacherError(data.message || "Registration failed. Please try again.");
       }
     } catch (error) {
       console.error("Error during registration:", error);
+      setTeacherError("An error occurred. Please try again.");
+    } finally {
+      setTeacherLoading(false);
     }
   };
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+  
+  // Component for rendering password requirements
+  const PasswordRequirements = ({ validations }: { validations: PasswordValidation }) => (
+    <div className="mt-2 space-y-1 text-sm">
+      <div className={`flex items-center gap-1 ${validations.minLength ? 'text-green-500' : 'text-red-500'}`}>
+        {validations.minLength ? <Check size={14} /> : <X size={14} />}
+        <span>Minimum 8 characters</span>
+      </div>
+      <div className={`flex items-center gap-1 ${validations.hasUppercase ? 'text-green-500' : 'text-red-500'}`}>
+        {validations.hasUppercase ? <Check size={14} /> : <X size={14} />}
+        <span>Uppercase letter</span>
+      </div>
+      <div className={`flex items-center gap-1 ${validations.hasNumber ? 'text-green-500' : 'text-red-500'}`}>
+        {validations.hasNumber ? <Check size={14} /> : <X size={14} />}
+        <span>Number</span>
+      </div>
+      <div className={`flex items-center gap-1 ${validations.hasSpecial ? 'text-green-500' : 'text-red-500'}`}>
+        {validations.hasSpecial ? <Check size={14} /> : <X size={14} />}
+        <span>Special character</span>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+    <div className="container flex  w-screen py-[40px]  flex-col items-center justify-center">
       <Link
         href="/"
         className="absolute left-4 top-4 flex items-center gap-2 md:left-8 md:top-8"
@@ -150,15 +282,19 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="student-first-name">First Name</Label>
-                    <Input id="student-first-name" 
-                         onChange={(e) => setStudentFirstName(e.target.value)}
-                    placeholder="John" />
+                    <Input 
+                      id="student-first-name" 
+                      onChange={(e) => setStudentFirstName(e.target.value)}
+                      placeholder="John" 
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="student-last-name">Last Name</Label>
-                    <Input id="student-last-name" 
+                    <Input 
+                      id="student-last-name" 
                       onChange={(e) => setStudentLastName(e.target.value)}
-                    placeholder="Doe" />
+                      placeholder="Doe" 
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -167,7 +303,6 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
                     id="student-email"
                     type="email"
                     placeholder="name@example.com"
-
                     onChange={(e) => setStudentEmail(e.target.value)}
                   />
                 </div>
@@ -178,7 +313,6 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
                       id="student-password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
-
                       onChange={(e) => setStudentPassword(e.target.value)}
                     />
                     <Button
@@ -198,40 +332,48 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
                       </span>
                     </Button>
                   </div>
+                  {studentPassword.length > 0 && <PasswordRequirements validations={studentValidations} />}
                 </div>
                 <div className="space-y-2">
-  <Label htmlFor="confirm-student-password">Confirm Password</Label>
-  <div className="relative">
-    <Input
-      id="confirm-student-password"
-      type={showPassword ? "text" : "password"}
-      placeholder="••••••••"
-      onChange={(e) => setConfirmStudentPassword(e.target.value)}
-    />
-    <Button
-      type="button"
-      variant="ghost"
-      size="icon"
-      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
-      onClick={togglePasswordVisibility}
-    >
-      {showPassword ? (
-        <EyeOff className="h-4 w-4 text-muted-foreground" />
-      ) : (
-        <Eye className="h-4 w-4 text-muted-foreground" />
-      )}
-      <span className="sr-only">
-        {showPassword ? "Hide password" : "Show password"}
-      </span>
-    </Button>
-  </div>
-</div>
-
+                  <Label htmlFor="confirm-student-password">Confirm Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="confirm-student-password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      onChange={(e) => setConfirmStudentPassword(e.target.value)}
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      onClick={togglePasswordVisibility}
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      ) : (
+                        <Eye className="h-4 w-4 text-muted-foreground" />
+                      )}
+                      <span className="sr-only">
+                        {showPassword ? "Hide password" : "Show password"}
+                      </span>
+                    </Button>
+                  </div>
+                  {confirmStudentPassword && studentPassword !== confirmStudentPassword && (
+                    <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
+                  )}
+                </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
-                <Button className="w-full" 
-                onClick={registerStudent}
-                >Create Account</Button>
+                {studentError && <p className="text-red-500 text-center w-full">{studentError}</p>}
+                <Button 
+                  className="w-full" 
+                  onClick={registerStudent}
+                  disabled={studentLoading || !isStudentPasswordValid || !studentFirstName || !studentLastName || !studentEmail || studentPassword !== confirmStudentPassword}
+                >
+                  {studentLoading ? "Creating Account..." : "Create Account"}
+                </Button>
                 <div className="flex items-center space-x-2">
                   <div className="flex-1 border-t"></div>
                   <span className="text-xs text-muted-foreground">OR</span>
@@ -246,7 +388,7 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
           <TabsContent value="teacher">
             <Card>
               <CardHeader>
-                <CardTitle>Teacher Registration</CardTitle>
+                <CardTitle>Instructor Registration</CardTitle>
                 <CardDescription>
                   Create your Instructor account to start creating courses and
                   teaching.
@@ -256,17 +398,19 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="teacher-first-name">First Name</Label>
-                    <Input id="teacher-first-name"
-                    onChange={(e) => setTeacherFirstName(e.target.value)} 
-                    placeholder="John" />
+                    <Input 
+                      id="teacher-first-name"
+                      onChange={(e) => setTeacherFirstName(e.target.value)} 
+                      placeholder="John" 
+                    />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="teacher-last-name"
-                    >Last Name</Label>
-                    <Input id="teacher-last-name"
-                    onChange={(e) => setTeacherLastName(e.target.value)}
-                    
-                    placeholder="Doe" />
+                    <Label htmlFor="teacher-last-name">Last Name</Label>
+                    <Input 
+                      id="teacher-last-name"
+                      onChange={(e) => setTeacherLastName(e.target.value)}
+                      placeholder="Doe" 
+                    />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -285,8 +429,7 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
                       id="teacher-password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
-                    onChange={(e) => setTeacherPassword(e.target.value)}
-
+                      onChange={(e) => setTeacherPassword(e.target.value)}
                     />
                     <Button
                       type="button"
@@ -305,17 +448,17 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
                       </span>
                     </Button>
                   </div>
+                  {teacherPassword.length > 0 && <PasswordRequirements validations={teacherValidations} />}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="teacher-password">confirm Password</Label>
+                  <Label htmlFor="confirm-teacher-password">Confirm Password</Label>
                   <div className="relative">
                     <Input
-                      id="teacher-password"
+                      id="confirm-teacher-password"
                       type={showPassword ? "text" : "password"}
                       placeholder="••••••••"
-                    onChange={(e) => setConfirmTeacherPassword(e.target.value)}
-
+                      onChange={(e) => setConfirmTeacherPassword(e.target.value)}
                     />
                     <Button
                       type="button"
@@ -334,17 +477,20 @@ const [confirmteacherPassword, setConfirmTeacherPassword] = useState("");
                       </span>
                     </Button>
                   </div>
+                  {confirmTeacherPassword && teacherPassword !== confirmTeacherPassword && (
+                    <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
+                  )}
                 </div>
-                {/* <div className="space-y-2">
-                  <Label htmlFor="teacher-qualification">Qualification</Label>
-                  <Input
-                    id="teacher-qualification"
-                    placeholder="e.g., MSc in Computer Science"
-                  />
-                </div> */}
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
-                <Button onClick={registerTeacher} className="w-full">Create Account</Button>
+                {teacherError && <p className="text-red-500 text-center w-full">{teacherError}</p>}
+                <Button 
+                  onClick={registerTeacher} 
+                  className="w-full"
+                  disabled={teacherLoading || !isTeacherPasswordValid || !teacherFirstName || !teacherLastName || !teacherEmail || teacherPassword !== confirmTeacherPassword}
+                >
+                  {teacherLoading ? "Creating Account..." : "Create Account"}
+                </Button>
                 <div className="flex items-center space-x-2">
                   <div className="flex-1 border-t"></div>
                   <span className="text-xs text-muted-foreground">OR</span>

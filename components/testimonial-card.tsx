@@ -12,7 +12,7 @@ interface TestimonialCardProps {
     name: string;
     role: string;
     content: string;
-    avatar: string;
+    avatar: any;
     rating: number;
   };
 }
@@ -29,7 +29,7 @@ export default function TestimonialCard({ testimonial }: TestimonialCardProps) {
                 alt={testimonial.name}
                 width={50}
                 height={50}
-                className="rounded-full"
+                className="rounded-full w-[50px] h-[50px]"
               />
               <div>
                 <h4 className="font-semibold">{testimonial.name}</h4>

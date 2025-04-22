@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="w-full border-t bg-background py-6 md:py-12">
+    <footer className="w-full border-t bg-background py-[40px] md:py-12">
       <div className="container px-4 md:px-6">
         <div className="grid grid-cols-2 gap-10 sm:grid-cols-4">
           <div className="space-y-3">
@@ -25,14 +25,14 @@ const Footer = () => {
                   Blog
                 </Link>
               </li> */}
-              <li>
+              {/* <li>
                 <Link
                   href="/careers"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Careers
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div className="space-y-3">
@@ -46,22 +46,22 @@ const Footer = () => {
                   Contact Us
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/help"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Help Center
                 </Link>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <Link
                   href="/faq"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   FAQ
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div className="space-y-3">
@@ -83,38 +83,38 @@ const Footer = () => {
                   Privacy Policy
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/cookies"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Cookie Policy
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
           <div className="space-y-3">
             <h3 className="text-lg font-medium">Connect</h3>
             <ul className="space-y-2">
-              <li>
+              {/* <li>
                 <Link
                   href="#"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Twitter
                 </Link>
-              </li>
-              <li>
+              </li> */}
+              {/* <li>
                 <Link
                   href="#"
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Facebook
                 </Link>
-              </li>
+              </li> */}
               <li>
                 <Link
-                  href="#"
+                  href="https://www.instagram.com/officiala1school "
                   className="text-sm text-muted-foreground hover:text-foreground"
                 >
                   Instagram
@@ -128,24 +128,24 @@ const Footer = () => {
             © {new Date().getFullYear()} A1 School. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
-            <Link
+            {/* <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               Terms
-            </Link>
+            </Link> */}
             <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               Privacy
             </Link>
-            <Link
+            {/* <Link
               href="#"
               className="text-sm text-muted-foreground hover:text-foreground"
             >
               Cookies
-            </Link>
+            </Link> */}
           </div>
         </div>
       </div>

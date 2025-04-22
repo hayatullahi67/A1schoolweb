@@ -90,15 +90,13 @@ const Header = () => {
               <X className="h-6 w-6" />
             </Button>
             <nav className="flex flex-col gap-4">
-              <Link href="/courses" onClick={toggleSidebar}>
+              <Link href="/register" onClick={toggleSidebar}>
                 Courses
               </Link>
               <Link href="/about" onClick={toggleSidebar}>
                 About
               </Link>
-              <Link href="/blog" onClick={toggleSidebar}>
-                Blog
-              </Link>
+              
               <Link href="/contact" onClick={toggleSidebar}>
                 Contact
               </Link>

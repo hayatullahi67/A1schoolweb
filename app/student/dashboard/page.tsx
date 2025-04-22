@@ -616,7 +616,7 @@ setCourseid(courseIds)
  (allcourses.map((course) => (
                     <Card key={course.id} className="overflow-hidden">
                       <div className="aspect-video w-full overflow-hidden">
-                        <Image
+                        <img
                           src={course.image_link }
                           alt={course.name}
                           width={400}

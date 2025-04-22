@@ -7,9 +7,16 @@ import { FaPlay, FaPhoneAlt, FaUsers, FaShieldAlt } from "react-icons/fa";
 import { MdCheckCircle } from "react-icons/md";
 import { FiArrowRight } from "react-icons/fi";
 import { AiFillStar } from "react-icons/ai";
+import girl from "@/public/images/A1logo2.png"
+import uxdesigner from "@/public/images/uxdesigner.jpeg"
+import david from "@/public/images/david.jpeg"
+import A1logo from "@/public/images/A1logo2.png"
+
 
 import { Button } from "@/components/ui/button";
 import Header from "@/components/header";
+// import { Link } from "lucide-react";
+import Footer from "@/components/footer";
 
 export default function AboutPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -101,11 +108,11 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
               <div className="order-2 md:order-1">
                 <Image
-                  src="/placeholder.svg?height=500&width=600"
+                  src={A1logo}
                   alt="Our mission"
-                  width={600}
-                  height={500}
-                  className="rounded-lg object-cover w-full h-auto"
+                  width={400}
+                  height={400}
+                  className="rounded-lg object-cover  h-[400px]"
                 />
               </div>
               <div className="space-y-6 order-1 md:order-2">
@@ -186,7 +193,7 @@ export default function AboutPage() {
                   <div className="flex items-center">
                     <div className="w-12 h-12 bg-gray-200 rounded-full mr-4 overflow-hidden">
                       <Image
-                        src={`/placeholder.svg?height=48&width=48`}
+                        src={david}
                         alt="User"
                         width={48}
                         height={48}
@@ -194,10 +201,10 @@ export default function AboutPage() {
                       />
                     </div>
                     <div>
-                      <h4 className="font-bold">User Name</h4>
-                      <p className="text-sm text-gray-500">
+                      <h4 className="font-bold">David Olawuyi</h4>
+                      {/* <p className="text-sm text-gray-500">
                         Position, Organization
-                      </p>
+                      </p> */}
                     </div>
                   </div>
                 </div>
@@ -217,18 +224,30 @@ export default function AboutPage() {
               create engaging learning experiences.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-white text-[#2563eb] hover:bg-white/90 font-medium px-6 py-2 rounded-full">
-                START FREE TRIAL
+               
+               <Button className="bg-white text-[#2563eb] hover:bg-white/90 font-medium px-6 py-2 rounded-full">
+              
+              
+               <Link href="/register"> START FREE TRIAL</Link>
+                
               </Button>
+               
+
+             
+            
               <Button
                 variant="outline"
                 className="border-white text-white hover:bg-white/10 font-medium px-6 py-2 rounded-full"
               >
-                CONTACT SALES
+                   <Link href="/register">CONTACT SALES</Link>
+                
               </Button>
+           
+              
             </div>
           </div>
         </section>
+        <Footer />
       </main>
     </div>
     </>

@@ -166,15 +166,15 @@ export default function ContactPage() {
      <section className="text-center space-y-4">
        <p>Join us on social media</p>
        <div className="flex justify-center space-x-6 text-blue-600">
-         <a href="#">
+         {/* <a href="#">
            <FaLinkedinIn className="w-6 h-6 hover:text-blue-800" />
-         </a>
-         <a href="#">
+         </a> */}
+         <a href="https://www.instagram.com/officiala1school ">
            <FaInstagram className="w-6 h-6 hover:text-blue-800" />
          </a>
-         <a href="#">
+         {/* <a href="#">
            <FaTwitter className="w-6 h-6 hover:text-blue-800" />
-         </a>
+         </a> */}
        </div>
        <p className="text-gray-500">
          Thank you for considering A1 for your digital needs.

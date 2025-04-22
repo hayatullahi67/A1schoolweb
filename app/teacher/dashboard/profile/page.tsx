@@ -4,6 +4,7 @@ import React, {useEffect, useState, ChangeEvent } from "react";
 import { NextPage } from "next";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {  Check, X } from "lucide-react";
 
 type Instructor = {
   fullname: string;
@@ -11,6 +12,14 @@ type Instructor = {
   token: string;
   id: string;
 };
+
+
+interface PasswordValidation {
+  minLength: boolean;
+  hasUppercase: boolean;
+  hasNumber: boolean;
+  hasSpecial: boolean;
+}
 const ProfilePage: NextPage = () => {
   // Mock data - replace with real user data from API
   const [instructorName] = useState<string>("John Doe");
@@ -21,11 +30,39 @@ const ProfilePage: NextPage = () => {
   id:"",
   token: "",
 });
+ const [teacherError, setTeacherError] = useState("");
+  const [teacherLoading, setTeacherLoading] = useState(false);
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
+   const [teacherValidations, setTeacherValidations] = useState<PasswordValidation>({
+      minLength: false,
+      hasUppercase: false,
+      hasNumber: false,
+      hasSpecial: false
+    });
+    const [isTeacherPasswordValid, setIsTeacherPasswordValid] = useState(false);
+  
+    useEffect(() => {
+      validateNewPassword(newPassword);
+    }, [newPassword]);
 
-  useEffect(() => {
+    
+
+      const validateNewPassword = (value: string) => {
+        const newValidations = {
+          minLength: value.length >= 8,
+          hasUppercase: /[A-Z]/.test(value),
+          hasNumber: /\d/.test(value),
+          hasSpecial: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(value)
+        };
+        
+        setTeacherValidations(newValidations);
+        setIsTeacherPasswordValid(Object.values(newValidations).every(val => val === true));
+      };
+
+      
+    useEffect(() => {
         
     const stored = localStorage.getItem("userData");
     console.log("stored",stored)
@@ -56,6 +93,12 @@ const ProfilePage: NextPage = () => {
       e.preventDefault();
   
      
+      if (newPassword !== confirmPassword) {
+        setTeacherError("Passwords do not match");
+        return;}
+
+        setTeacherLoading(true)
+
       if (!instructor.token) {
         toast.error('Authentication token not found');
         return;
@@ -85,6 +128,7 @@ const ProfilePage: NextPage = () => {
         setConfirmPassword('');
         setNewPassword('');
       } catch (error: any) {
+        setTeacherError(error.message)
         toast.error(error.message || 'An error occurred');
       }
     };
@@ -100,8 +144,28 @@ const ProfilePage: NextPage = () => {
   //   }
   // };
 
+  const PasswordRequirements = ({ validations }: { validations: PasswordValidation }) => (
+      <div className="mt-2 space-y-1 text-sm">
+        <div className={`flex items-center gap-1 ${validations.minLength ? 'text-green-500' : 'text-red-500'}`}>
+          {validations.minLength ? <Check size={14} /> : <X size={14} />}
+          <span>Minimum 8 characters</span>
+        </div>
+        <div className={`flex items-center gap-1 ${validations.hasUppercase ? 'text-green-500' : 'text-red-500'}`}>
+          {validations.hasUppercase ? <Check size={14} /> : <X size={14} />}
+          <span>Uppercase letter</span>
+        </div>
+        <div className={`flex items-center gap-1 ${validations.hasNumber ? 'text-green-500' : 'text-red-500'}`}>
+          {validations.hasNumber ? <Check size={14} /> : <X size={14} />}
+          <span>Number</span>
+        </div>
+        <div className={`flex items-center gap-1 ${validations.hasSpecial ? 'text-green-500' : 'text-red-500'}`}>
+          {validations.hasSpecial ? <Check size={14} /> : <X size={14} />}
+          <span>Special character</span>
+        </div>
+      </div>
+    );
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
+    <div className="max-w-3xl mt-[50px] mb-[50px] mx-auto p-6 bg-white shadow-lg rounded-2xl">
       <ToastContainer/>
       {/* Instructor Profile */}
       <section className="mb-8">
@@ -134,8 +198,8 @@ const ProfilePage: NextPage = () => {
       </section>
 
       {/* Settings - Read-Only */}
-      <section className="mb-8">
-        <h2 className="text-2xl font-semibold mb-4">Settings</h2>
+      <section className="mb-8 ">
+        <h2 className="text-2xl  font-semibold mb-4">Settings</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="flex flex-col">
             <label htmlFor="name" className="font-medium mb-1">
@@ -179,6 +243,7 @@ const ProfilePage: NextPage = () => {
               onChange={(e) => setNewPassword(e.target.value)}
               className="border rounded-lg p-2"
             />
+             {newPassword.length > 0 && <PasswordRequirements validations={teacherValidations} />}
           </div>
           <div className="flex flex-col">
             <label htmlFor="confirmPassword" className="font-medium mb-1">
@@ -192,12 +257,20 @@ const ProfilePage: NextPage = () => {
               className="border rounded-lg p-2"
             />
           </div>
+          {teacherError && <p className="text-[red] text-center w-full">{teacherError}</p>}
+
           <button
             onClick={handleChangePassword}
             className="px-6 py-2 bg-[green] text-white rounded-lg hover:bg-green-700"
-          >
+            disabled={teacherLoading || !isTeacherPasswordValid || newPassword !== confirmPassword }
+         >
             Change Password
           </button>
+
+          {confirmPassword && newPassword !== confirmPassword && (
+                    <p className="text-red-500 text-sm mt-1">Passwords do not match</p>
+                  )}
+                
           <hr className="my-4" />
           {/* <button
             onClick={handleDeleteAccount}
