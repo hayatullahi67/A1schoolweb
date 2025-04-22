@@ -23,7 +23,7 @@ export default function PrivacyPolicyPage() {
           <p>Last Updated: {currentDate}</p>
         </div>
         <p>
-          This Privacy Policy explains how A1school ("we", "our", "us") collects, uses, discloses, and protects the
+          This Privacy Policy explains how A1school ( we ,  our ,  us ) collects, uses, discloses, and protects the
           personal information of users who interact with our platform, including instructors, students, affiliates, and
           visitors. By using A1school, you consent to the practices outlined in this policy.
         </p>

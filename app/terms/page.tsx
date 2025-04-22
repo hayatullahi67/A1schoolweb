@@ -27,8 +27,8 @@ export default function TermsPage() {
           </p>
         </div>
         <p>
-          Please read these Terms & Conditions ("Terms", "Agreement") carefully before using the A1school platform
-          ("Platform", "Service") operated by A1school ("we", "us", "our").
+          Please read these Terms & Conditions ( erms ,  Agreement ) carefully before using the A1school platform
+          (  Platform ,   Service ) operated by A1school ( we ,  us ,  our ).
         </p>
         <p className="mt-3">
           By accessing or using A1school, whether as a student, instructor, affiliate, or visitor, you agree to be
