@@ -32,8 +32,6 @@ export default function LoginPage() {
     setShowPassword(!showPassword);
   };
 
-
-
   // const handleLogin = async () => {
   //   setLoading(true);
   //   setError(""); // Reset error before new login attempt
@@ -65,13 +63,12 @@ export default function LoginPage() {
   //   }
   // };
 
-
   const handleLogin = async () => {
     setLoading(true);
     setError(""); // Reset error before new login attempt
-  
+
     const loginData = { email, password, userType };
-  
+
     try {
       const res = await fetch("https://api.a1schools.org/auth/login", {
         method: "POST",
@@ -80,15 +77,15 @@ export default function LoginPage() {
         },
         body: JSON.stringify(loginData),
       });
-  
+
       const data = await res.json();
       console.log("data", data);
-  
+
       if (res.ok) {
         // Store token and user data in localStorage for authenticated sessions
         // localStorage.setItem("authToken", data.token);
         localStorage.setItem("userData", JSON.stringify(data.data)); // Store the user data
-  
+
         // Check user role and navigate accordingly
         const roles = data.data.roles || [];
         const isStudent = roles.some((role: Role) => role.name === "student");
@@ -96,7 +93,6 @@ export default function LoginPage() {
         if (isStudent) {
           // Navigate to student dashboard
           window.location.href = "/student/dashboard"; // Adjust URL as needed
-
         } else {
           // Handle other roles or show an error message
           setError("Unknown role. Access is denied.");
@@ -110,14 +106,14 @@ export default function LoginPage() {
       setLoading(false);
     }
   };
-  
+
   const handleLogin2 = async () => {
     setLoading(true);
     setError(""); // Reset error before new login attempt
-  
+
     const loginData = { email, password };
-    console.log('Login Data:', loginData); // Log login data
-  
+    console.log("Login Data:", loginData); // Log login data
+
     try {
       const res = await fetch("https://api.a1schools.org/auth/login", {
         method: "POST",
@@ -126,33 +122,43 @@ export default function LoginPage() {
         },
         body: JSON.stringify(loginData),
       });
-  
+
       const data = await res.json();
       console.log("Response Data:", data); // Log the response data
-  
+
       if (res.ok) {
         localStorage.setItem("userData", JSON.stringify(data.data));
         const roles = data.data.roles || [];
-        console.log('Roles:', roles); // Log roles to verify structure
-  
-        const isStudent = roles.some((role: Role) => role.name === "instructor");
+        console.log("Roles:", roles); // Log roles to verify structure
+
+        const isStudent = roles.some(
+          (role: Role) => role.name === "instructor"
+        );
         if (isStudent) {
           window.location.href = "/teacher/dashboard"; // Adjust URL as needed
         } else {
           setError("Unknown role. Access is denied.");
         }
       } else {
-        const errorMessage = data?.message || 'Login failed. Please try again.';
+        const errorMessage = data?.message || "Login failed. Please try again.";
         setError(errorMessage);
       }
     } catch (err) {
-      console.error('Error:', err);
+      console.error("Error:", err);
       setError("An error occurred. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
+
+  const handleGoogleLogin = () => {
+    const userTypeParam = userType;
+    const googleLoginUrl = `https://api.a1schools.org/auth/google?user_type=${
+      userTypeParam === "teacher" ? "instructor" : userTypeParam
+    }`;
+
+    window.location.href = googleLoginUrl;
+  };
 
   return (
     <div className="container flex h-screen w-screen flex-col items-center justify-center">
@@ -238,15 +244,26 @@ export default function LoginPage() {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
-              {error && <p className="text-red-500 text-center">{error}</p>}
-                <Button onClick={handleLogin} disabled={loading} className="w-full">  {loading ? "Signing In..." : "Sign In"}</Button>
-                
+                {error && <p className="text-red-500 text-center">{error}</p>}
+                <Button
+                  onClick={handleLogin}
+                  disabled={loading}
+                  className="w-full"
+                >
+                  {" "}
+                  {loading ? "Signing In..." : "Sign In"}
+                </Button>
+
                 <div className="flex items-center space-x-2">
                   <div className="flex-1 border-t"></div>
                   <span className="text-xs text-muted-foreground">OR</span>
                   <div className="flex-1 border-t"></div>
                 </div>
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoogleLogin}
+                >
                   Sign in with Google
                 </Button>
               </CardFooter>
@@ -318,11 +335,11 @@ export default function LoginPage() {
               </CardFooter>
             </Card> */}
 
-<Card>
+            <Card>
               <CardHeader>
                 <CardTitle>Instructor Login</CardTitle>
                 <CardDescription>
-                Access your dashboard, courses, and student data.
+                  Access your dashboard, courses, and student data.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -374,15 +391,26 @@ export default function LoginPage() {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
-              {error && <p className="text-red-500 text-center">{error}</p>}
-                <Button onClick={handleLogin2} disabled={loading} className="w-full">  {loading ? "Signing In..." : "Sign In"}</Button>
-                
+                {error && <p className="text-red-500 text-center">{error}</p>}
+                <Button
+                  onClick={handleLogin2}
+                  disabled={loading}
+                  className="w-full"
+                >
+                  {" "}
+                  {loading ? "Signing In..." : "Sign In"}
+                </Button>
+
                 <div className="flex items-center space-x-2">
                   <div className="flex-1 border-t"></div>
                   <span className="text-xs text-muted-foreground">OR</span>
                   <div className="flex-1 border-t"></div>
                 </div>
-                <Button variant="outline" className="w-full">
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={handleGoogleLogin}
+                >
                   Sign in with Google
                 </Button>
               </CardFooter>

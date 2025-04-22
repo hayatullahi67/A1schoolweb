@@ -1,983 +1,1078 @@
-'use client';
+"use client";
 
+import type React from "react";
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-
- import { useEffect , useRef, useState } from "react";
-
- import { X } from 'lucide-react';
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { Plus, X, Video, Check, Upload } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
- type Question = {
-    id: number;
-    text: string;
-    options: string[];
-  };
-  
+type Question = {
+  id: number;
+  text: string;
+  options: { id: number; value: string; answer: boolean }[];
+};
 
 type Objective = {
   id: number;
   title: string;
   description: string;
-  
 };
+
 type Lesson = {
-    id: number;
-    title: string;
-    file?: File;
-  };
-interface VideoUploadProps {
-    // onVideoUpload: (file: File) => void;
-    onTitleChange: (title: string) => void;
-    defaultTitle?: string;
-  }
+  id: number;
+  title: string;
+  video_link?: string;
+  file?: File;
+};
 
-  type Instructor = {
-    fullname: string;
-    email: string;
-    token: string;
-    id: string;
-  };
+type Module = {
+  id: number;
+  title: string;
+  description: string;
+  lessons: Lesson[];
+};
 
-  const CreateCourse: React.FC = () =>  {
-           
-    const [courseName, setCourseName] = useState('');
-const [coursePrice, setCoursePrice] = useState('');
-const [category, setCategory] = useState('');
-const [categories, setCategories] = useState<string[]>([]);
-const [description, setDescription] = useState('');
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const [objectives, setObjectives] = useState<Objective[]>([
-        { id: 1, title: '', description: '' },
-      ]);
-      const [questions, setQuestions] = useState<Question[]>([
-        { id: 1, text: '', options: ['', ''] }
-      ]);
-      const [lessonTodo , setLessonTodo] = useState<Lesson[]>([])
-      const fileInputRef = useRef<HTMLInputElement>(null);
-      const [videoFile, setVideoFile] = useState<File | null>(null);
-      const [videoPreviewUrl, setVideoPreviewUrl] = useState<string | null>(null);
-    //   const [isUploading, setIsUploading] = useState(false);
-    const [instructor, setInstructor] = useState<Instructor>({
-        fullname: "Loading...",
-        email: "",
-        id:"",
-        token: "",
-      });
-      const handleUploadClick = () => {
-        fileInputRef.current?.click();
-      };
-    
+interface Instructor {
+  fullname: string;
+  email: string;
+  token: string;
+  id: string;
+}
 
-useEffect(() => {
-        
+export default function CourseManagementPage() {
+  const [courseName, setCourseName] = useState("");
+  const [coursePrice, setCoursePrice] = useState("");
+  const [category, setCategory] = useState("");
+  const [categories, setCategories] = useState<string[]>([]);
+  const [description, setDescription] = useState("");
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [objectives, setObjectives] = useState<Objective[]>([
+    { id: 1, title: "", description: "" },
+  ]);
+  const [questions, setQuestions] = useState<Question[]>([
+    { id: 1, text: "", options: [{ id: 1, value: "", answer: false }] },
+  ]);
+  const [modules, setModules] = useState<Module[]>([
+    { id: 1, title: "", description: "", lessons: [] },
+  ]);
+  const [instructor, setInstructor] = useState<Instructor>({
+    fullname: "Loading...",
+    email: "",
+    id: "",
+    token: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
     const stored = localStorage.getItem("userData");
-    console.log("stored",stored)
     if (stored) {
-      const parsed = JSON.parse(stored);
-      console.log("parsed",parsed)
-      setInstructor({
-        fullname: parsed.fullname || "Student",
-        email: parsed.email || "",
-        id: parsed.id,
-        token: parsed.token
-      });
+      try {
+        const parsed = JSON.parse(stored);
+        setInstructor({
+          fullname: parsed.fullname || "Instructor",
+          email: parsed.email || "",
+          id: parsed.id || "",
+          token: parsed.token || "",
+        });
+      } catch (error) {
+        console.error("Error parsing user data:", error);
+      }
     }
   }, []);
 
-    //   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     const file = e.target.files?.[0];
-    //     if (!file) return;
-    
-    //     if (file.type.startsWith('video/')) {
-    //       setIsUploading(true);
-    //       setVideoFile(file);
-    
-    //       const fileUrl = URL.createObjectURL(file);
-    //       setVideoPreviewUrl(fileUrl);
-    
-    //     //   onVideoUpload(file);
-    //       setIsUploading(false);
-    //     } else {
-    //       alert('Please select a valid video file.');
-    //     }
-    //   };
-    
-
-    const handleAddCategory = () => {
-      if (category && !categories.includes(category)) {
-        setCategories([...categories, category]); // Add the category to the array
-        setCategory(''); // Reset the input field
-      }
-    };
-
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-      
-        if (file.type.startsWith('video/')) {
-          // Handle the video file
-          console.log("Video file selected:", file);
-        } else {
-          alert("Please upload a valid video file.");
-        }
-      };
-      
-    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0];
-      if (file) {
-        const imageUrl = URL.createObjectURL(file);
-        setImagePreview(imageUrl);
-      }
-    };
- 
-    // const fileInputRef = useRef<HTMLInputElement>(null);
-    
-    // const handleUploadClick = () => {
-    //     fileInputRef.current?.click();
-    //   };  
-
-      const handleAdd = () => {
-        const newId = objectives.length ? objectives[objectives.length - 1].id + 1 : 1;
-        setObjectives([...objectives, { id: newId, title: '', description: '' }]);
-      };
-    
-      const handleRemove = (id: number) => {
-        if (objectives.length > 1) {
-          setObjectives(objectives.filter((obj) => obj.id !== id));
-        }
-      };
-    
-      const handleChange = (
-        id: number,
-        field: 'title' | 'description',
-        value: string
-      ) => {
-        setObjectives((prev) =>
-          prev.map((obj) =>
-            obj.id === id ? { ...obj, [field]: value } : obj
-          )
-        );
-      };
-
-      const handleRemoveLesson = (id: number) => {
-        if (lessonTodo.length > 1) {
-          setLessonTodo(lessonTodo.filter((obj) => obj.id !== id));
-        }
-      };
-
-      // const handleAddLesson = () => {
-      //   const newId = lessonTodo.length ? lessonTodo[lessonTodo.length - 1].id + 1 : 1;
-      //   setLessonTodo([...lessonTodo, { id: newId, title: '', file: undefined }]);
-      // };
-      const handleAddLesson = () => {
-        const newId = lessonTodo.length ? lessonTodo[lessonTodo.length - 1].id + 1 : 1;
-        setLessonTodo([...lessonTodo, { id: newId, title: '', file: undefined }]);
-      };
-    
-      const handleAddQuestion = () => {
-        const newId = questions.length ? questions[questions.length - 1].id + 1 : 1;
-        setQuestions([...questions, { id: newId, text: '', options: ['', ''] }]);
-      };
-      
-      const handleRemoveQuestion = (id: number) => {
-        setQuestions(questions.filter(q => q.id !== id));
-      };
-      
-      const handleQuestionTextChange = (id: number, value: string) => {
-        setQuestions(prev =>
-          prev.map(q => q.id === id ? { ...q, text: value } : q)
-        );
-      };
-      
-      const handleOptionChange = (questionId: number, index: number, value: string) => {
-        setQuestions(prev =>
-          prev.map(q =>
-            q.id === questionId
-              ? {
-                  ...q,
-                  options: q.options.map((opt, i) => (i === index ? value : opt))
-                }
-              : q
-          )
-        );
-      };
-      
-      const handleAddOption = (questionId: number) => {
-        setQuestions(prev =>
-          prev.map(q =>
-            q.id === questionId
-              ? { ...q, options: [...q.options, ''] }
-              : q
-          )
-        );
-      };
-      
-    //   const handleRemoveOption = (questionId: number, index: number) => {
-        
-    //     setQuestions(prev =>
-    //       prev.map(q =>
-    //         q.id === questionId
-    //           ? {
-    //               ...q,
-    //               options: q.options.filter((_, i) => i !== index)
-    //             }
-    //           : q
-    //       )
-    //     );
-    //   };
-      
-    const handleRemoveOption = (questionId: number, index: number) => {
-        setQuestions(prev =>
-          prev.map(q => {
-            if (q.id === questionId) {
-              if (q.options.length <= 2) {
-                alert("Each question must have at least 2 options.");
-                return q; // prevent update
-              }
-              return {
-                ...q,
-                options: q.options.filter((_, i) => i !== index)
-              };
-            }
-            return q;
-          })
-        );
-      };
-
-  //     const handleSubmit = async() => {
-  //       const courseData = {
-  //         name: courseName,
-  //         price: coursePrice,
-  //         category:categories,
-  //         description,
-  //         objectives,
-  //         questions,
-  //         lessons: lessonTodo,
-  //         thumbnail: imagePreview,
-  //         // Add more as needed
-  //       };
-      
-  //       console.log(courseData);
-  //       // Send to backend or Firebase
-
-        
-
-  // try {
-  //   const response = await fetch(`https://api.a1schools.org/courses?instructor_id=${instructor.id}`, {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       'Authorization': `Bearer ${instructor.token}`
-  //     },
-  //     body: JSON.stringify(courseData) // course should be your state object holding form data
-  //   });
-
-  //   if (!response.ok) {
-  //     const errorData = await response.json();
-  //     console.error('Error submitting course:', errorData);
-  //     alert('Failed to submit course');
-  //     return;
-  //   }
-
-  //   const data = await response.json();
-  //   console.log('Course submitted successfully:', data);
-  //   alert('Course submitted successfully!');
-  //   // Optionally clear the form here
-  // } catch (error) {
-  //   console.error('Error:', error);
-  //   alert('An error occurred while submitting the course');
-  // }
-  //     };
-      
-      
-  // const handleSubmit = async () => {
-  //   const formData = new FormData();
-  //   formData.append('name', courseName);
-  //   formData.append('price', coursePrice);
-  //   formData.append('category', category);
-  //   formData.append('description', description);
-  
-  //   // Add thumbnail image file
-  //   if (fileInputRef.current?.files?.[0]) {
-  //     formData.append('thumbnail', fileInputRef.current.files[0]);
-  //   }
-  
-  //   // Append objectives as JSON string
-  //   formData.append('objectives', JSON.stringify(objectives));
-    
-  //   // Append questions
-  //   formData.append('questions', JSON.stringify(questions));
-  
-  //   // Append lessons and lesson files
-  //   lessonTodo.forEach((lesson, index) => {
-  //     formData.append(`lessons[${index}][title]`, lesson.title);
-  //     if (lesson.file) {
-  //       formData.append(`lessons[${index}][file]`, lesson.file);
-  //     }
-  //   });
-  
-  //   try {
-  //     const response = await fetch(`https://api.a1schools.org/courses?instructor_id=${instructor.id}`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Authorization': `Bearer ${instructor.token}`
-  //       },
-  //       body: formData
-  //     });
-  
-  //     if (!response.ok) {
-  //       const errorData = await response.json();
-  //       console.error('Error submitting course:', errorData);
-  //       alert('Failed to submit course');
-  //       return;
-  //     }
-  
-  //     const data = await response.json();
-  //     console.log('Course submitted successfully:', data);
-  //     alert('Course submitted successfully!');
-  //   } catch (error) {
-  //     console.error('Error:', error);
-  //     alert('An error occurred while submitting the course');
-  //   }
-  // };
-
-
-//   const handleSubmit = async () => {
-//     const formData = new FormData();
-//     formData.append('name', courseName);
-//     formData.append('price', coursePrice);
-//     // formData.append('category', categories);
-//     formData.append('category', categories.join(','));
-//     formData.append('description', description);
-
-//     // Thumbnail and other files handling
-//     if (fileInputRef.current?.files?.[0]) {
-//       formData.append('thumbnail', fileInputRef.current.files[0]);
-//     }
-
-//     // Append objectives and questions as JSON strings
-//     formData.append('objectives', JSON.stringify(objectives));
-//     formData.append('questions', JSON.stringify(questions));
-
-//     // Append lessons and lesson files
-//     lessonTodo.forEach((lesson, index) => {
-//         formData.append(`lessons[${index}][title]`, lesson.title);
-//         if (lesson.file) {
-//             formData.append(`lessons[${index}][file]`, lesson.file);
-//         }
-//     });
-
-//     try {
-//         const response = await fetch(`https://api.a1schools.org/courses?instructor_id=${instructor.id}`, {
-//             method: 'POST',
-//             headers: {
-//                 'Authorization': `Bearer ${instructor.token}`
-//             },
-//             body: formData
-//         });
-
-//         if (!response.ok) {
-//             const errorData = await response.json();
-//             console.error('Error submitting course:', errorData);
-//             alert('Failed to submit course');
-//             return;
-//         }
-
-//         const data = await response.json();
-//         console.log('Course submitted successfully:', data);
-//         alert('Course submitted successfully!');
-//     } catch (error) {
-//         console.error('Error:', error);
-//         alert('An error occurred while submitting the course');
-//     }
-// };
-
-  
-
-// const handleSubmit = async () => {
-//   const formData = new FormData();
-//   formData.append('name', courseName);
-//   formData.append('price', coursePrice);
-//   formData.append('description', description);
-  
-//   // Add categories
-//   categories.forEach((cat, index) => {
-//     formData.append(`category[${index}]`, cat);
-//   });
-
-//   // Add thumbnail file - needs to be the actual file, not a URL
-//   if (fileInputRef.current?.files?.[0]) {
-//     formData.append('thumbnail', fileInputRef.current.files[0]);
-//   }
-
-//   // Append objectives as JSON string
-//   formData.append('objectives', JSON.stringify(objectives));
-  
-//   // Append questions
-//   formData.append('questions', JSON.stringify(questions));
-
-//   // Append lessons and lesson files
-//   lessonTodo.forEach((lesson, index) => {
-//     formData.append(`lessons[${index}][title]`, lesson.title);
-//     if (lesson.file) {
-//       formData.append(`lessons[${index}][file]`, lesson.file);
-//     }
-//   });
-
-//   try {
-//     const response = await fetch(`https://api.a1schools.org/courses?instructor_id=${instructor.id}`, {
-//       method: 'POST',
-//       headers: {
-//         'Authorization': `Bearer ${instructor.token}`
-//         // Note: Don't set Content-Type when using FormData, browser sets it automatically
-//       },
-//       body: formData
-//     });
-
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       console.error('Error submitting course:', errorData);
-//       // Log the actual validation errors
-//       if (errorData.detail) {
-//         console.error('Validation errors:', errorData.detail);
-//       }
-//       alert(`Failed to submit course: ${JSON.stringify(errorData.detail)}`);
-//       return;
-//     }
-
-//     const data = await response.json();
-//     console.log('Course submitted successfully:', data);
-//     alert('Course submitted successfully!');
-//   } catch (error) {
-//     console.error('Error:', error);
-//     alert('An error occurred while submitting the course');
-//   }
-// };
-  
-
-
-
-// const handleSubmit = async() => {
-//   // Create a proper JSON object for submission
-//   const courseData = {
-//     name: courseName,
-//     price: Number(coursePrice),
-//     category: categories,
-//     description,
-//     objectives,
-//     questions,
-//     lessons: lessonTodo.map(lesson => ({
-//       id: lesson.id,
-//       title: lesson.title
-//     })),
-//     // Add the missing modules field
-//     modules: objectives.map(obj => ({
-//       id: obj.id,
-//       title: obj.title,
-//       description: obj.description,
-//       lessons: lessonTodo // You might need to map lessons to specific modules
-//     }))
-//   };
-
-//   console.log("Sending data:", courseData);
-  
-//   try {
-//     const response = await fetch(`https://api.a1schools.org/courses?instructor_id=${instructor.id}`, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//         'Authorization': `Bearer ${instructor.token}`
-//       },
-//       body: JSON.stringify(courseData)
-//     });
-
-//     if (!response.ok) {
-//       const errorData = await response.json();
-//       console.error('Error submitting course:', errorData);
-//       alert(`Failed to submit course: ${JSON.stringify(errorData.detail || errorData)}`);
-//       return;
-//     }
-
-//     const data = await response.json();
-//     console.log('Course submitted successfully:', data);
-//     alert('Course submitted successfully!');
-//   } catch (error) {
-//     console.error('Error:', error);
-//     alert('An error occurred while submitting the course');
-//   }
-// };
-
-
-
-const handleSubmit = async() => {
-  // Get thumbnail image if available
-  let image_link = null;
-  if (imagePreview) {
-    // If imagePreview is already a URL, use it directly
-    image_link = imagePreview;
-  }
-
-  // Get video links for lessons
-  const updatedLessons = lessonTodo.map(lesson => {
-    return {
-      id: lesson.id,
-      title: lesson.title,
-      video_link: videoPreviewUrl || null // Use the video preview URL if available
-    };
-  });
-
-  // Create proper JSON object for submission
-  const courseData = {
-    name: courseName,
-    price: Number(coursePrice),
-    category: categories,
-    description,
-    objectives,
-    questions,
-    lessons: updatedLessons,
-    image_link: image_link, // Add thumbnail URL
-    modules: objectives.map(obj => ({
-      id: obj.id,
-      title: obj.title,
-      description: obj.description,
-      // lessons: updatedLessons // Using updated lessons with video links
-    }))
-    // lessons: updatedLessons
+  const handleAddCategory = () => {
+    if (category && !categories.includes(category)) {
+      setCategories([...categories, category]);
+      setCategory("");
+    }
   };
 
-  console.log("Sending data:", courseData);
-  
-  try {
-    const response = await fetch(`https://api.a1schools.org/courses?instructor_id=${instructor.id}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${instructor.token}`
-      },
-      body: JSON.stringify(courseData)
-    });
+  const handleRemoveCategory = (categoryToRemove: string) => {
+    setCategories(categories.filter((cat) => cat !== categoryToRemove));
+  };
 
-    window.location.href = "/teacher/dashboard";
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const imageUrl = URL.createObjectURL(file);
+      setImagePreview(imageUrl);
+    }
+  };
 
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Error submitting course:', errorData);
-      // alert(`Failed to submit course: ${JSON.stringify(errorData.detail || errorData)}`);
-      return;
+  // Learning Objectives
+  const handleAddObjective = () => {
+    const newId =
+      objectives.length > 0
+        ? Math.max(...objectives.map((obj) => obj.id)) + 1
+        : 1;
+    setObjectives([...objectives, { id: newId, title: "", description: "" }]);
+  };
+
+  const handleRemoveObjective = (id: number) => {
+    if (objectives.length > 1) {
+      setObjectives(objectives.filter((obj) => obj.id !== id));
+    }
+  };
+
+  const handleChangeObjective = (
+    id: number,
+    field: "title" | "description",
+    value: string
+  ) => {
+    setObjectives((prev) =>
+      prev.map((obj) => (obj.id === id ? { ...obj, [field]: value } : obj))
+    );
+  };
+
+  // Quiz Questions
+  const handleAddQuestion = () => {
+    const newId =
+      questions.length > 0 ? Math.max(...questions.map((q) => q.id)) + 1 : 1;
+    setQuestions([
+      ...questions,
+      { id: newId, text: "", options: [{ id: 1, value: "", answer: false }] },
+    ]);
+  };
+
+  const handleRemoveQuestion = (id: number) => {
+    if (questions.length > 1) {
+      setQuestions(questions.filter((q) => q.id !== id));
+    }
+  };
+
+  const handleQuestionTextChange = (id: number, value: string) => {
+    setQuestions((prev) =>
+      prev.map((q) => (q.id === id ? { ...q, text: value } : q))
+    );
+  };
+
+  const handleOptionChange = (
+    questionId: number,
+    optionId: number,
+    value: string
+  ) => {
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: q.options.map((opt) =>
+                opt.id === optionId ? { ...opt, value } : opt
+              ),
+            }
+          : q
+      )
+    );
+  };
+
+  const handleSetCorrectAnswer = (questionId: number, optionId: number) => {
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: q.options.map((opt) => ({
+                ...opt,
+                answer: opt.id === optionId,
+              })),
+            }
+          : q
+      )
+    );
+  };
+
+  const handleAddOption = (questionId: number) => {
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              options: [
+                ...q.options,
+                {
+                  id:
+                    q.options.length > 0
+                      ? Math.max(...q.options.map((opt) => opt.id)) + 1
+                      : 1,
+                  value: "",
+                  answer: false,
+                },
+              ],
+            }
+          : q
+      )
+    );
+  };
+
+  const handleRemoveOption = (questionId: number, optionId: number) => {
+    setQuestions((prev) =>
+      prev.map((q) =>
+        q.id === questionId
+          ? {
+              ...q,
+              options:
+                q.options.length > 2
+                  ? q.options.filter((opt) => opt.id !== optionId)
+                  : q.options, // Prevent removing if only 2 options left
+            }
+          : q
+      )
+    );
+  };
+
+  // Modules and Lessons
+  const handleAddModule = () => {
+    const newId =
+      modules.length > 0 ? Math.max(...modules.map((m) => m.id)) + 1 : 1;
+    setModules([
+      ...modules,
+      { id: newId, title: "", description: "", lessons: [] },
+    ]);
+  };
+
+  const handleModuleTitleChange = (id: number, value: string) => {
+    setModules((prev) =>
+      prev.map((module) =>
+        module.id === id ? { ...module, title: value } : module
+      )
+    );
+  };
+
+  const handleModuleDescriptionChange = (id: number, value: string) => {
+    setModules((prev) =>
+      prev.map((module) =>
+        module.id === id ? { ...module, description: value } : module
+      )
+    );
+  };
+
+  const handleRemoveModule = (id: number) => {
+    if (modules.length > 1) {
+      setModules(modules.filter((module) => module.id !== id));
+    } else {
+      alert("You must have at least one module");
+    }
+  };
+
+  const handleAddLessonToModule = (moduleId: number) => {
+    const m = modules.find((m) => m.id === moduleId);
+    if (!m) return;
+
+    const newLessonId =
+      m.lessons.length > 0 ? Math.max(...m.lessons.map((l) => l.id)) + 1 : 1;
+
+    setModules((prev) =>
+      prev.map((module) =>
+        module.id === moduleId
+          ? {
+              ...module,
+              lessons: [...module.lessons, { id: newLessonId, title: "" }],
+            }
+          : module
+      )
+    );
+  };
+
+  const handleLessonTitleChange = (
+    moduleId: number,
+    lessonId: number,
+    value: string
+  ) => {
+    setModules((prev) =>
+      prev.map((module) =>
+        module.id === moduleId
+          ? {
+              ...module,
+              lessons: module.lessons.map((lesson) =>
+                lesson.id === lessonId ? { ...lesson, title: value } : lesson
+              ),
+            }
+          : module
+      )
+    );
+  };
+
+  const handleRemoveLessonFromModule = (moduleId: number, lessonId: number) => {
+    setModules((prev) =>
+      prev.map((module) =>
+        module.id === moduleId
+          ? {
+              ...module,
+              lessons: module.lessons.filter(
+                (lesson) => lesson.id !== lessonId
+              ),
+            }
+          : module
+      )
+    );
+  };
+
+  const handleVideoUpload = async (moduleId: number, lessonId: number) => {
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.accept = "video/*";
+
+    fileInput.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        const videoUrl = URL.createObjectURL(file);
+
+        setModules((prev) =>
+          prev.map((module) =>
+            module.id === moduleId
+              ? {
+                  ...module,
+                  lessons: module.lessons.map((lesson) =>
+                    lesson.id === lessonId
+                      ? { ...lesson, video_link: videoUrl, file: file }
+                      : lesson
+                  ),
+                }
+              : module
+          )
+        );
+      }
+    };
+
+    fileInput.click();
+  };
+
+  const validateForm = () => {
+    if (!courseName.trim()) {
+      alert("Please enter a course name");
+      return false;
     }
 
-    const data = await response.json();
-    console.log('Course submitted successfully:', data);
-    alert('Course submitted successfully!');
-  } catch (error) {
-    console.error('Error:', error);
-    alert('An error occurred while submitting the course');
-  }
-};
+    if (!coursePrice.trim() || isNaN(Number.parseFloat(coursePrice))) {
+      alert("Please enter a valid price");
+      return false;
+    }
 
-return (
-    <>
-    <div className="flex justify-center mt-[50px]">
+    if (categories.length === 0) {
+      alert("Please add at least one category");
+      return false;
+    }
 
-        <div className="w-[70%] my-[50px]">
-        <div>
-           <h1 className="text-[black] ">Course Details</h1>   
-           <p className="mt-[5px] text-[gray]">Enter information about your course</p>  
-        </div>
+    if (!description.trim()) {
+      alert("Please enter a course description");
+      return false;
+    }
 
-            {/* course details */}
-            <div className="mt-[20px]">
-                {/* price & name */}
-              <div className="grid grid-cols-2 gap-[30px]">
-                  {/* name */}
-                  <div>
-                    <Label htmlFor="coursename">Course Name </Label>
-                    <Input  id="coursename"
-                    type="text"
-                    value={courseName} onChange={(e) => setCourseName(e.target.value)}
-                   />
-                  </div>
-                  {/* price */}
-                  <div>
-                    <Label htmlFor="courseprice">Price </Label>
-                    <Input  id="courseprice"
-                    type="text"
-                    value={coursePrice} onChange={(e) => setCoursePrice(e.target.value)}
-                   />
-                  </div>
+    if (!imagePreview) {
+      alert("Please upload a course thumbnail");
+      return false;
+    }
 
-              </div>
+    // Validate objectives
+    const invalidObjectives = objectives.some((obj) => !obj.title.trim());
+    if (invalidObjectives) {
+      alert("All learning objectives must have a title");
+      return false;
+    }
 
-              {/* Categories */}
-              {/* <div className="flex items-center">
+    // Validate modules
+    const invalidModules = modules.some((module) => !module.title.trim());
+    if (invalidModules) {
+      alert("All modules must have a title");
+      return false;
+    }
 
-               <div className="flex-[2]">
-                   <Label htmlFor="categories">Categories</Label>
+    // Validate lessons
+    const modulesWithoutLessons = modules.some(
+      (module) => module.lessons.length === 0
+    );
+    if (modulesWithoutLessons) {
+      alert("Each module must have at least one lesson");
+      return false;
+    }
 
-                 <Input
-                 id="catergories"
-                 type="text"
-                 value={category} onChange={(e) => setCategory(e.target.value)}
-                 />
-               </div>
-               
+    const invalidLessons = modules.some((module) =>
+      module.lessons.some(
+        (lesson) => !lesson.title.trim() || !lesson.video_link
+      )
+    );
+    if (invalidLessons) {
+      alert("All lessons must have a title and video");
+      return false;
+    }
 
-              </div> */}
+    return true;
+  };
 
-<div className="flex items-center mb-[7px]">
-      <div className="flex-[2]">
-        <Label htmlFor="categories">Categories</Label>
-        <div className="flex">
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
 
-        <Input
-          id="categories"
-          type="text"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)} // Update the category input state
-        />
+    setIsSubmitting(true);
 
-        <button
-          type="button"
-          onClick={handleAddCategory}
-          className="ml-2 px-4 py-2 bg-[blue] text-white rounded"
-        >
-          Add
-        </button>
-        </div>
+    try {
+      // Step 1: Create the course
+      const courseData = {
+        name: courseName,
+        price: Number.parseFloat(coursePrice),
+        category: categories,
+        description,
+        objectives: objectives.map((obj) => ({
+          title: obj.title,
+          description: obj.description,
+        })),
+        modules: modules.map((module) => ({
+          title: module.title,
+          description: module.description,
+          lessons: module.lessons.map((lesson) => ({
+            title: lesson.title,
+          })),
+        })),
+      };
 
-        {/* Display the added categories */}
-        <div className="mt-2">
-          {categories.length > 0 && (
-            <div>
-              {categories.map((cat, index) => (
-                <span key={index} className="text-[white] bg-[gray] p-2 rounded-full mr-[5px] ml-[5px]">{cat}</span>
-              ))}
+      const courseResponse = await fetch(
+        `https://api.a1schools.org/courses?instructor_id=${instructor.id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${instructor.token}`,
+          },
+          body: JSON.stringify(courseData),
+        }
+      );
+
+      if (!courseResponse.ok) {
+        const errorData = await courseResponse.json();
+        throw new Error(
+          `Failed to create course: ${errorData.detail || "Unknown error"}`
+        );
+      }
+
+      const courseResult = await courseResponse.json();
+      const courseId = courseResult.data.id;
+
+      // Step 2: Upload course image
+      if (imageFile) {
+        const imageFormData = new FormData();
+        imageFormData.append("image", imageFile);
+
+        const imageResponse = await fetch(
+          `https://api.a1schools.org/courses/${courseId}/upload-image`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${instructor.token}`,
+            },
+            body: imageFormData,
+          }
+        );
+
+        if (!imageResponse.ok) {
+          console.error("Failed to upload course image");
+        }
+      }
+
+      // Step 3: Create modules and lessons
+      for (const m of modules) {
+        // Create module
+        const moduleResponse = await fetch(
+          `https://api.a1schools.org/courses/${courseId}/modules`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${instructor.token}`,
+            },
+            body: JSON.stringify({
+              title: m.title,
+              description: m.description,
+            }),
+          }
+        );
+
+        if (!moduleResponse.ok) {
+          console.error(`Failed to create module: ${m.title}`);
+          continue;
+        }
+
+        const moduleResult = await moduleResponse.json();
+        const moduleId = moduleResult.data.id;
+
+        // Create lessons for this module
+        for (const lesson of m.lessons) {
+          const lessonResponse = await fetch(
+            `https://api.a1schools.org/courses/${courseId}/modules/${moduleId}/lessons`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${instructor.token}`,
+              },
+              body: JSON.stringify({
+                title: lesson.title,
+              }),
+            }
+          );
+
+          if (!lessonResponse.ok) {
+            console.error(`Failed to create lesson: ${lesson.title}`);
+            continue;
+          }
+
+          const lessonResult = await lessonResponse.json();
+          const lessonId = lessonResult.data.id;
+
+          // Upload video for this lesson
+          if (lesson.file) {
+            const videoFormData = new FormData();
+            videoFormData.append("video", lesson.file);
+
+            const videoResponse = await fetch(
+              `https://api.a1schools.org/courses/${courseId}/modules/${moduleId}/lessons/${lessonId}/upload-video`,
+              {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${instructor.token}`,
+                },
+                body: videoFormData,
+              }
+            );
+
+            if (!videoResponse.ok) {
+              console.error(
+                `Failed to upload video for lesson: ${lesson.title}`
+              );
+            }
+          }
+        }
+
+        // Create quiz for this module if there are questions
+        if (questions.length > 0) {
+          const quizData = {
+            questions: questions.map((q) => ({
+              question: q.text,
+              options: q.options.map((opt) => ({
+                value: opt.value,
+                answer: opt.answer,
+              })),
+            })),
+          };
+
+          const quizResponse = await fetch(
+            `https://api.a1schools.org/courses/${courseId}/modules/${moduleId}/quiz`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${instructor.token}`,
+              },
+              body: JSON.stringify(quizData),
+            }
+          );
+
+          if (!quizResponse.ok) {
+            console.error("Failed to create quiz");
+          }
+        }
+      }
+
+      alert("Course created successfully!");
+      router.push("/instructor/manage-courses");
+    } catch (error) {
+      console.error("Error creating course:", error);
+      alert(
+        `Failed to create course: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="flex justify-center">
+      <div className="w-[90%] md:w-[80%] lg:w-[70%] my-[50px]">
+        <h1 className="text-2xl font-bold text-[black]">Course Details</h1>
+        <p className="mt-[5px] text-[gray]">
+          Enter information about your course
+        </p>
+
+        <div className="mt-[30px] space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-[30px]">
+            <div className="space-y-2">
+              <Label htmlFor="coursename">Course Name</Label>
+              <Input
+                id="coursename"
+                type="text"
+                value={courseName}
+                onChange={(e) => setCourseName(e.target.value)}
+                placeholder="Enter course name"
+              />
             </div>
-          )}
-        </div>
-      </div>
-    </div>
-  
-
-                   {/*  descriptiom  */}
-                   <div>
-  <label htmlFor="description" className="block mb-1">Description</label>
-  <textarea
-    name="description"
-    id="description"
-    value={description} onChange={(e) => setDescription(e.target.value)} 
-    className="w-full h-32 p-2 border border-gray-300 rounded"
-  />
-               </div>
-        
-                {/* thumbnail */}
-               <div className="w-full ">
-      <Label>Course Thumbnail</Label>
-      <div
-        className="flex items-center justify-center w-full h-48 bg-gray-100 border-2 border-dashed border-gray-300 rounded-md cursor-pointer"
-        onClick={() => document.getElementById('thumbnail-input')?.click()}
-      >
-        {imagePreview ? (
-          <Image src={imagePreview} alt="Thumbnail Preview" className="object-cover h-full w-full rounded-md" />
-        ) : (
-          <div className="text-gray-400 flex flex-col items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10 mb-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5h2l.4 2M7 13h10l1 6H6l1-6zm3 0V9h4v4H10z" />
-            </svg>
-            <p>Add Thumbnail</p>
+            <div className="space-y-2">
+              <Label htmlFor="courseprice">Price</Label>
+              <Input
+                id="courseprice"
+                type="text"
+                value={coursePrice}
+                onChange={(e) => {
+                  // Only allow numbers and decimal point
+                  const regex = /^\d*\.?\d*$/;
+                  if (regex.test(e.target.value) || e.target.value === "") {
+                    setCoursePrice(e.target.value);
+                  }
+                }}
+                placeholder="Enter course price"
+              />
+            </div>
           </div>
-        )}
-        <Input
-          id="thumbnail-input"
-          type="file"
-          accept="image/*"
-          className="hidden"
-          onChange={handleImageChange}
-        />
-      </div>
-              </div>
 
-              {/* Learning */}
-              <div className="w-full mt-[30px] mb-[30px]">
-      <h2 className="text-xl font-semibold mb-1">Learning Objectives</h2>
-      <p className="text-sm text-gray-500 mb-4">What will students learn from this course?</p>
-
-      {objectives.map((obj, index) => (
-        <div
-          key={obj.id}
-          className="relative mb-4 p-4 border rounded-md bg-white shadow-sm"
-        >
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-blue-500 font-semibold">#{index + 1}</span>
-            {objectives.length > 1 && (
-              <button
-                onClick={() => handleRemove(obj.id)}
-                className="text-red-500 hover:text-red-700"
+          <div className="space-y-2">
+            <Label htmlFor="categories">Categories</Label>
+            <div className="flex gap-2">
+              <Input
+                id="categories"
+                type="text"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                placeholder="Add a category"
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                onClick={handleAddCategory}
+                className="bg-white text-black"
               >
-                <X />
-              </button>
-            )}
-          </div>
-
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">Title</label>
-            <input
-              type="text"
-              placeholder="Enter learning objective"
-              value={obj.title}
-              onChange={(e) =>
-                handleChange(obj.id, 'title', e.target.value)
-              }
-              className="w-full border rounded px-3 py-2 text-sm"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
-            <textarea
-              placeholder="Enter detailed description"
-              value={obj.description}
-              onChange={(e) =>
-                handleChange(obj.id, 'description', e.target.value)
-              }
-              className="w-full border rounded px-3 py-2 text-sm"
-              rows={3}
-            />
-          </div>
-        </div>
-      ))}
-
-      <button
-        onClick={handleAdd}
-        className="flex items-center justify-center w-full mt-2 py-2 px-4 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 transition"
-      >
-        + Add Learning Objective
-      </button>
-          </div>
-
-          {/* module */}
-          <div className="w-full mt-[30px] mb-[30px]">
-      <h2 className="text-xl font-semibold mb-1">Course Modules</h2>
-      <p className="text-sm text-gray-500 mb-4">Organise your course content into modules</p>
-
-      {objectives.map((obj, index) => (
-        <div
-          key={obj.id}
-          className="relative mb-4 p-4 border rounded-md bg-white shadow-sm"
-        >
-          <div className="flex justify-between items-center mb-2">
-            <span className="text-blue-500 font-semibold">#{index + 1}</span>
-            {objectives.length > 1 && (
-              <button
-                onClick={() => handleRemove(obj.id)}
-                className="text-red-500 hover:text-red-700"
-              >
-                <X />
-              </button>
-            )}
-          </div>
-
-          <div className="mb-2">
-            <label className="block text-sm font-medium mb-1">Module Title</label>
-            <input
-              type="text"
-              placeholder="Enter learning objective"
-              value={obj.title}
-              onChange={(e) =>
-                handleChange(obj.id, 'title', e.target.value)
-              }
-              className="w-full border rounded px-3 py-2 text-sm"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
-            <textarea
-              placeholder="Enter detailed description"
-              value={obj.description}
-              onChange={(e) =>
-                handleChange(obj.id, 'description', e.target.value)
-              }
-              className="w-full border rounded px-3 py-2 text-sm"
-              rows={3}
-            />
-          </div>
-
-         {/* lesson */}
-          <div>
-            <Label>Lessons</Label>
-
-            <div>
-            {lessonTodo.map((lesson) => (
-              <div key={lesson.id} className="relative mb-4 p-4 border rounded-md bg-white shadow-sm">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-blue-500 font-semibold">#{lesson.id}</span>
-                  {lessonTodo.length > 1 && (
-                    <button onClick={() => handleRemoveLesson(lesson.id)} className="text-red-500 hover:text-red-700">
-                      <X />
+                <Plus className="w-4 h-4 mr-2" />
+                Add
+              </Button>
+            </div>
+            {categories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {categories.map((cat, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center bg-gray-200 rounded-full px-3 py-1"
+                  >
+                    <span className="text-sm">{cat}</span>
+                    <button
+                      onClick={() => handleRemoveCategory(cat)}
+                      className="ml-2 text-gray-500 hover:text-gray-700"
+                    >
+                      <X className="w-3 h-3" />
                     </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Enter course description"
+              rows={4}
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label>Course Thumbnail</Label>
+            <div
+              className="border-2 border-dashed rounded-lg p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+              onClick={() =>
+                document.getElementById("thumbnail-input")?.click()
+              }
+            >
+              {imagePreview ? (
+                <div className="relative w-full h-48">
+                  <Image
+                    src={imagePreview || "/placeholder.svg"}
+                    alt="Thumbnail Preview"
+                    fill
+                    className="object-cover rounded-lg"
+                  />
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-48">
+                  <Upload className="w-12 h-12 text-gray-400 mb-2" />
+                  <p className="text-gray-500">Click to upload thumbnail</p>
+                </div>
+              )}
+              <Input
+                id="thumbnail-input"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+              />
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-semibold">Learning Objectives</h2>
+                <p className="text-sm text-gray-500">
+                  What will students learn from this course?
+                </p>
+              </div>
+            </div>
+
+            {objectives.map((obj, index) => (
+              <div
+                key={obj.id}
+                className="p-4 border rounded-md bg-white shadow-sm"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-blue-600 font-semibold">
+                    Objective #{index + 1}
+                  </span>
+                  {objectives.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveObjective(obj.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
                   )}
                 </div>
-
-               
-
-                {/* Lesson File (Video) */}
-                {/* <div className="mb-2">
-                  <Label>Upload Video</Label>
-                  <input
-                    type="file"
-                    accept="video/*"
-                    ref={fileInputRef}
-                    onChange={(e) => handleFileChange(lesson.id, e)}
-                    className="w-full border rounded px-3 py-2 text-sm"
-                  />
-                  {lesson.file && (
-                    <video controls src={videoPreviewUrl} width={200} height={100} className="rounded-md mt-2" />
-                  )}
-                </div> */}
-
-
-<div className="mb-2">
-  <label className="block text-sm font-medium mb-1">Lesson Video</label>
-  <input
-    type="file"
-    accept="video/*"
-    className="w-full"
-    onChange={handleFileChange}
-  />
-  {videoPreviewUrl && (
-    <video src={videoPreviewUrl} controls className="w-full mt-2 rounded-md" />
-  )}
-</div>
-
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor={`objective-title-${obj.id}`}>Title</Label>
+                    <Input
+                      id={`objective-title-${obj.id}`}
+                      type="text"
+                      placeholder="Enter learning objective"
+                      value={obj.title}
+                      onChange={(e) =>
+                        handleChangeObjective(obj.id, "title", e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`objective-desc-${obj.id}`}>
+                      Description
+                    </Label>
+                    <Textarea
+                      id={`objective-desc-${obj.id}`}
+                      placeholder="Enter detailed description"
+                      value={obj.description}
+                      onChange={(e) =>
+                        handleChangeObjective(
+                          obj.id,
+                          "description",
+                          e.target.value
+                        )
+                      }
+                      rows={3}
+                    />
+                  </div>
+                </div>
               </div>
             ))}
 
-            <button
-              onClick={handleAddLesson}
-              className="flex items-center justify-center w-full mt-2 py-2 px-4 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 transition"
+            <Button
+              variant="outline"
+              onClick={handleAddObjective}
+              className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
             >
-              + Add Lesson
-            </button>
+              <Plus className="w-4 h-4 mr-2" />
+              Add Learning Objective
+            </Button>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-semibold">Quiz Questions</h2>
+                <p className="text-sm text-gray-500">
+                  Add questions for the course quiz
+                </p>
+              </div>
             </div>
 
-            
-          </div>
-          {/* QUIZ */}
-
-          <div>
-            {/* QUIZ */}
-<div className="w-full mt-[30px] mb-[30px]">
-  <h2 className="text-xl font-semibold mb-1">Quiz</h2>
-  <p className="text-sm text-gray-500 mb-4">Create quiz questions for your course</p>
-
-  {questions.map((question, qIndex) => (
-    <div key={question.id} className="border rounded-md p-4 mb-4 bg-white shadow-sm">
-      <div className="flex justify-between items-center mb-2">
-        <span className="text-blue-500 font-semibold">Question {qIndex + 1}</span>
-        {questions.length > 1 && (
-          <button onClick={() => handleRemoveQuestion(question.id)} className="text-red-500 hover:text-red-700">
-            <X />
-          </button>
-        )}
-      </div>
-
-      <input
-        type="text"
-        placeholder="Enter question"
-        value={question.text}
-        onChange={(e) => handleQuestionTextChange(question.id, e.target.value)}
-        className="w-full mb-3 px-3 py-2 border rounded"
-      />
-
-      <div>
-        <label className="block mb-2 text-sm font-semibold">Options</label>
-        {question.options.map((option, index) => (
-          <div key={index} className="flex items-center mb-2 gap-2">
-            <input
-              type="radio"
-              disabled
-              className="accent-blue-500"
-            />
-            <input
-              type="text"
-              placeholder={`Option ${index + 1}`}
-              value={option}
-              onChange={(e) => handleOptionChange(question.id, index, e.target.value)}
-              className="flex-1 px-3 py-2 border rounded"
-            />
-            {question.options.length > 1 && (
-              <button
-                onClick={() => handleRemoveOption(question.id, index)}
-                className="text-red-500 hover:text-red-700"
+            {questions.map((question, index) => (
+              <div
+                key={question.id}
+                className="p-4 border rounded-md bg-white shadow-sm"
               >
-                <X />
-              </button>
-            )}
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-blue-600 font-semibold">
+                    Question #{index + 1}
+                  </span>
+                  {questions.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveQuestion(question.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor={`question-text-${question.id}`}>
+                      Question Text
+                    </Label>
+                    <Input
+                      id={`question-text-${question.id}`}
+                      type="text"
+                      placeholder="Enter question"
+                      value={question.text}
+                      onChange={(e) =>
+                        handleQuestionTextChange(question.id, e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Options</Label>
+                    {question.options.map((option, optIndex) => (
+                      <div
+                        key={option.id}
+                        className="flex items-center gap-2 mb-2"
+                      >
+                        <div
+                          className={`w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer ${
+                            option.answer
+                              ? "border-green-500 bg-green-50"
+                              : "border-gray-300"
+                          }`}
+                          onClick={() =>
+                            handleSetCorrectAnswer(question.id, option.id)
+                          }
+                        >
+                          {option.answer && (
+                            <Check className="h-4 w-4 text-green-500" />
+                          )}
+                        </div>
+                        <Input
+                          type="text"
+                          placeholder={`Option ${optIndex + 1}`}
+                          value={option.value}
+                          onChange={(e) =>
+                            handleOptionChange(
+                              question.id,
+                              option.id,
+                              e.target.value
+                            )
+                          }
+                          className={`flex-1 ${
+                            option.answer ? "border-green-500 bg-green-50" : ""
+                          }`}
+                        />
+                        {question.options.length > 2 && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                              handleRemoveOption(question.id, option.id)
+                            }
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleAddOption(question.id)}
+                      className="text-blue-600 hover:text-blue-700"
+                    >
+                      <Plus className="w-4 h-4 mr-2" />
+                      Add Option
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <Button
+              variant="outline"
+              onClick={handleAddQuestion}
+              className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Question
+            </Button>
           </div>
-        ))}
 
-        <button
-          onClick={() => handleAddOption(question.id)}
-          className="text-sm text-blue-500 hover:underline mt-1"
-        >
-          + Add Option
-        </button>
-      </div>
-    </div>
-  ))}
-
-  <button
-    onClick={handleAddQuestion}
-    className="flex items-center justify-center w-full mt-2 py-2 px-4 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 transition"
-  >
-    + Add Question
-  </button>
-</div>
-
-          </div>
-
-        </div>
-      ))}
-
-      <button
-        onClick={handleAdd}
-        className="flex items-center justify-center w-full mt-2 py-2 px-4 border border-blue-500 text-blue-500 rounded-md hover:bg-blue-50 transition"
-      >
-        + Add Module
-      </button>
-          </div>
-
-          <button
-    type="button"
-    onClick={handleSubmit}
-    className="bg-[blue] text-white px-6 py-2 rounded hover:bg-blue-700"
-  >
-    Submit Course
-  </button>
-
-
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <div>
+                <h2 className="text-xl font-semibold">Course Modules</h2>
+                <p className="text-sm text-gray-500">
+                  Organize your course content into modules
+                </p>
+              </div>
             </div>
 
-        <div>
+            {modules.map((module, moduleIndex) => (
+              <div
+                key={module.id}
+                className="p-4 border rounded-md bg-white shadow-sm"
+              >
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-blue-600 font-semibold">
+                    Module #{moduleIndex + 1}
+                  </span>
+                  {modules.length > 1 && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => handleRemoveModule(module.id)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor={`module-title-${module.id}`}>Title</Label>
+                    <Input
+                      id={`module-title-${module.id}`}
+                      type="text"
+                      placeholder="Enter module title"
+                      value={module.title}
+                      onChange={(e) =>
+                        handleModuleTitleChange(module.id, e.target.value)
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor={`module-desc-${module.id}`}>
+                      Description
+                    </Label>
+                    <Textarea
+                      id={`module-desc-${module.id}`}
+                      placeholder="Enter module description"
+                      value={module.description}
+                      onChange={(e) =>
+                        handleModuleDescriptionChange(module.id, e.target.value)
+                      }
+                      rows={3}
+                    />
+                  </div>
 
-        </div>
+                  <div className="space-y-4">
+                    <h3 className="font-medium">Lessons</h3>
+                    {module.lessons.map((lesson, lessonIndex) => (
+                      <div
+                        key={lesson.id}
+                        className="border rounded-md p-4 space-y-4"
+                      >
+                        <div className="flex justify-between items-center">
+                          <div className="flex items-center gap-2 flex-1">
+                            <span className="text-gray-500 font-medium">
+                              #{lessonIndex + 1}
+                            </span>
+                            <Input
+                              type="text"
+                              placeholder="Enter lesson title"
+                              value={lesson.title}
+                              onChange={(e) =>
+                                handleLessonTitleChange(
+                                  module.id,
+                                  lesson.id,
+                                  e.target.value
+                                )
+                              }
+                              className="flex-1"
+                            />
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() =>
+                              handleRemoveLessonFromModule(module.id, lesson.id)
+                            }
+                            className="text-red-500 hover:text-red-700 ml-2"
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
 
+                        <div className="space-y-2">
+                          <Label>Video</Label>
+                          {lesson.video_link ? (
+                            <div className="flex items-center justify-between bg-gray-50 p-2 rounded">
+                              <div className="flex items-center gap-2 overflow-hidden">
+                                <Video className="h-4 w-4 text-blue-600 shrink-0" />
+                                <span className="text-sm truncate">
+                                  Video uploaded
+                                </span>
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  handleVideoUpload(module.id, lesson.id)
+                                }
+                              >
+                                Change
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              onClick={() =>
+                                handleVideoUpload(module.id, lesson.id)
+                              }
+                              className="w-full"
+                            >
+                              <Video className="h-4 w-4 mr-2" />
+                              Upload Video
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleAddLessonToModule(module.id)}
+                      className="w-full text-blue-600 border-blue-600 hover:bg-blue-50"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Lesson
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            <Button
+              variant="outline"
+              onClick={handleAddModule}
+              className="w-full border-blue-600 text-blue-600 hover:bg-blue-50"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Module
+            </Button>
+          </div>
+
+          <Button
+            onClick={handleSubmit}
+            disabled={isSubmitting}
+            className="w-full text-white py-2"
+          >
+            {isSubmitting ? "Creating Course..." : "Submit Course"}
+          </Button>
         </div>
+      </div>
     </div>
-    
-    </>
-   
   );
-};
-
-
-export default CreateCourse;
+}
