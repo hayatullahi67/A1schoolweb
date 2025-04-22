@@ -165,7 +165,7 @@ export default function PrivacyPolicyPage() {
 
       <section className="mb-6">
         <h2 className="text-xl font-bold mb-3" id="childrens-privacy">
-          8. Children's Privacy
+          8. Children  Privacy
         </h2>
         <p>
           A1school is not intended for children under 13 (or under 16 in the EU). We do not knowingly collect personal
