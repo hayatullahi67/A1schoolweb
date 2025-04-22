@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-// import { useSearchParams } from "next/navigation";
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "next/navigation";
 import { BookOpen, Eye, EyeOff, Lock, Key } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -19,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export default function ResetPasswordPage() {
-  const searchParams = useParams();
+  const searchParams = useSearchParams();
   const email = searchParams.get("email");
 
   const [code, setCode] = useState("");
