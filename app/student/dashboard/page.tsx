@@ -82,6 +82,25 @@ type AllCourse = {
   average_rating:string
 };
 
+type CompletedCourse = {
+  id: string;
+  name: string;
+  instructor: {
+    fullname: string;
+    image_link: string;
+  };
+  image_link:string
+  price: string;
+  updated_at: string;
+  description: string;
+  discount: string;
+  created_at: string;
+  progress: number;
+  completedLessons: number;
+  totalLessons: number;
+  category: {};
+  average_rating:string
+};
 export default function StudentDashboard() {
   const [student, setStudent] = useState<Student>({
     fullname: "Loading...",
@@ -94,6 +113,7 @@ export default function StudentDashboard() {
   const [courseId , setCourseid] = useState()
   const [certificates, setCertificates] = useState<{ [courseId: string]: any }>({});
   const studentId = student.id;
+  const [completedCourses , setcompletedCourses] = useState<CompletedCourse[]>([])
   const  token = student.token;
   useEffect(() => {
     
@@ -180,61 +200,87 @@ setCourseid(courseIds)
   }, [courses, token]);
 
 
-  // useEffect(() => {
-  //   // Fetch courses when the student ID is available
+  useEffect(() => {
+    // Fetch courses when the student ID is available
     
-  //     const fetchallCourses = async () => {
-  //       try {
-  //         const response = await fetch(`https://api.a1schools.org/courses`, {
-  //           method: "GET",
-  //           headers: {
-  //             'Authorization': `Bearer ${token}`,  // Replace with your token
-  //             'Content-Type': 'application/json',
-  //           },
-  //         });
+      const fetchallCourses = async () => {
+        try {
+          const response = await fetch(`https://api.a1schools.org/courses`, {
+            method: "GET",
+            headers: {
+              'Authorization': `Bearer ${token}`,  // Replace with your token
+              'Content-Type': 'application/json',
+            },
+          });
 
-  //         if (!response.ok) {
-  //           throw new Error("Failed to fetch courses");
-  //         }
+          if (!response.ok) {
+            throw new Error("Failed to fetch courses");
+          }
 
-  //         const data = await response.json();
-  //         console.log("data",data)
-  //         setallCourses(data.data); // Assuming the API returns a `courses` array
+          const data = await response.json();
+          console.log("data",data)
+          setallCourses(data.data); // Assuming the API returns a `courses` array
           
-  //       } catch (error) {
-  //         console.error("Error fetching courses:", error);
-  //       }
-  //     };
+        } catch (error) {
+          console.error("Error fetching courses:", error);
+        }
+      };
 
-  //     fetchallCourses();
+      fetchallCourses();
     
-  // }, [, token]);
+  }, [, token]);
 
   useEffect(() => {
-    const fetchallCourses = async () => {
-      try {
-        const response = await fetch(`https://api.a1schools.org/courses`, {
-          method: "GET",
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-        });
-  
-        if (!response.ok) {
-          throw new Error("Failed to fetch courses");
-        }
-  
-        const data = await response.json();
-        console.log("data", data);
-        setallCourses(data.data); // Ensure data.data is an array
-      } catch (error) {
-        console.error("Error fetching courses:", error);
-      }
-    };
-  
     if (token) {
+      const fetchallCourses = async () => {
+        try {
+          const response = await fetch(`https://api.a1schools.org/courses`, {
+            method: "GET",
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+  
+          if (!response.ok) {
+            throw new Error("Failed to fetch courses");
+          }
+  
+          const data = await response.json();
+          setallCourses(data.data);
+        } catch (error) {
+          console.error("Error fetching courses:", error);
+        }
+      };
       fetchallCourses();
+    }
+  }, [token]);
+  
+
+  useEffect(() => {
+    if (token) {
+      const fetchacompletedCourses = async () => {
+        try {
+          const response = await fetch(`https://api.a1schools.org/users/${studentId}/completed-courses`, {
+            method: "GET",
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+  
+          if (!response.ok) {
+            throw new Error("Failed to fetch courses");
+          }
+  
+          const data = await response.json();
+          console.log("com",data)
+          setcompletedCourses(data.data);
+        } catch (error) {
+          console.error("Error fetching courses:", error);
+        }
+      };
+      fetchacompletedCourses();
     }
   }, [token]);
 
@@ -339,20 +385,20 @@ setCourseid(courseIds)
               </SidebarMenuItem> */}
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <Link href="/student/profile">
+                  <Link href="/student/dashboard/profile">
                     <User className="h-4 w-4" />
                     <span>Profile</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
-              <SidebarMenuItem>
+              {/* <SidebarMenuItem>
                 <SidebarMenuButton asChild>
                   <Link href="/student/settings">
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
                   </Link>
                 </SidebarMenuButton>
-              </SidebarMenuItem>
+              </SidebarMenuItem> */}
 
               <SidebarMenuItem>
                     <SidebarMenuButton asChild>
@@ -421,7 +467,7 @@ setCourseid(courseIds)
                 <GraduationCap className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">2</div>
+                <div className="text-2xl font-bold">{completedCourses.length}</div>
                 {/* <p className="text-xs text-muted-foreground">
                   +1 from last month
                 </p> */}
@@ -513,13 +559,17 @@ setCourseid(courseIds)
                 </div>
               </TabsContent>
               <TabsContent value="completed">
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {completedCourses.map((course) => (
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 ">
+                  { completedCourses.length === 0 ? 
+                  (
+                    <>You have not  completed any courses</>
+                  ):
+                  (completedCourses.map((course) => (
                     <Card key={course.id} className="overflow-hidden">
                       <div className="aspect-video w-full overflow-hidden">
                         <Image
-                          src={course.image || "/placeholder.svg"}
-                          alt={course.title}
+                          src={course.image_link || "/placeholder.svg"}
+                          alt={course.name}
                           width={400}
                           height={220}
                           className="h-full w-full object-cover"
@@ -527,9 +577,9 @@ setCourseid(courseIds)
                       </div>
                       <CardHeader className="p-4 pb-0">
                         <CardTitle className="text-lg">
-                          {course.title}
+                          {course.name}
                         </CardTitle>
-                        <CardDescription>{course.instructor}</CardDescription>
+                        <CardDescription>{course.instructor.fullname}</CardDescription>
                       </CardHeader>
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between mb-2">
@@ -537,14 +587,14 @@ setCourseid(courseIds)
                             Completed on
                           </span>
                           <span className="text-sm font-medium">
-                            {course.completedDate}
+                            {/* {course.completedDate} */}
                           </span>
                         </div>
                         <div className="mt-4 flex items-center justify-between">
                           <div className="flex items-center">
                             <Star className="h-4 w-4 fill-primary text-primary mr-1" />
                             <span className="text-sm font-medium">
-                              {course.rating}
+                              {course.average_rating}
                             </span>
                           </div>
                           <Button size="sm" variant="outline">
@@ -553,7 +603,7 @@ setCourseid(courseIds)
                         </div>
                       </CardContent>
                     </Card>
-                  ))}
+                  )))}
                 </div>
               </TabsContent>
               <TabsContent value="recommended">
@@ -566,15 +616,14 @@ setCourseid(courseIds)
  (allcourses.map((course) => (
                     <Card key={course.id} className="overflow-hidden">
                       <div className="aspect-video w-full overflow-hidden">
-                        {/* <Image
+                        <Image
                           src={course.image_link }
                           alt={course.name}
                           width={400}
                           height={220}
                           className="h-full w-full object-cover"
-                        /> */}
-                        <Image src={course.image_link}  width={400}
-                          height={220}  className="h-full w-full object-cover" alt="" />
+                        />
+                        
                       </div>
                       <CardHeader className="p-4 pb-0">
                         <CardTitle className="text-lg">

@@ -5,7 +5,8 @@ import { NextPage } from "next";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-type Instructor = {
+
+type Student = {
   fullname: string;
   email: string;
   token: string;
@@ -15,12 +16,13 @@ const ProfilePage: NextPage = () => {
   // Mock data - replace with real user data from API
   const [instructorName] = useState<string>("John Doe");
   const [userEmail] = useState<string>("john.doe@example.com");
-  const [instructor, setInstructor] = useState<Instructor>({
-  fullname: "Loading...",
-  email: "",
-  id:"",
-  token: "",
-});
+  const [student, setStudent] = useState<Student>({
+    fullname: "Loading...",
+    email: "",
+    id:"",
+    token: "",
+  });
+  
   const [profileImage, setProfileImage] = useState<string | null>(null);
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
@@ -32,7 +34,7 @@ const ProfilePage: NextPage = () => {
     if (stored) {
       const parsed = JSON.parse(stored);
       console.log("parsed",parsed)
-      setInstructor({
+      setStudent({
         fullname: parsed.fullname || "Student",
         email: parsed.email || "",
         id: parsed.id,
@@ -41,53 +43,65 @@ const ProfilePage: NextPage = () => {
     }
   }, []);
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (file) {
+  //     const reader = new FileReader();
+  //     reader.onloadend = () => {
+  //       setProfileImage(reader.result as string);
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // };
+
+  // const handlePasswordChange = () => {
+  //   if (newPassword && newPassword === confirmPassword) {
+  //     // TODO: call API to change password
+  //     alert("Password changed successfully");
+  //     setNewPassword("");
+  //     setConfirmPassword("");
+  //   } else {
+  //     alert("Passwords do not match");
+  //   }
+  // };
+
 
   const handleChangePassword = async (e: React.FormEvent) => {
-      e.preventDefault();
-  
-     
-      if (!instructor.token) {
-        toast.error('Authentication token not found');
-        return;
+    e.preventDefault();
+
+   
+    if (!student.token) {
+      toast.error('Authentication token not found');
+      return;
+    }
+    const usedata = {
+      password : newPassword,
+      confirm_password : confirmPassword
+    }
+
+    try {
+      const res = await fetch('https://api.a1schools.org/auth/update-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${student.token}`,
+        },
+        body: JSON.stringify(usedata),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || 'Failed to update password');
       }
-      const usedata = {
-        password : newPassword,
-        confirm_password : confirmPassword
-      }
-  
-      try {
-        const res = await fetch('https://api.a1schools.org/auth/update-password', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${instructor.token}`,
-          },
-          body: JSON.stringify(usedata),
-        });
-  
-        const data = await res.json();
-  
-        if (!res.ok) {
-          throw new Error(data.message || 'Failed to update password');
-        }
-  
-        toast.success('Password updated successfully!');
-        setConfirmPassword('');
-        setNewPassword('');
-      } catch (error: any) {
-        toast.error(error.message || 'An error occurred');
-      }
-    };
+
+      toast.success('Password updated successfully!');
+      setConfirmPassword('');
+      setNewPassword('');
+    } catch (error: any) {
+      toast.error(error.message || 'An error occurred');
+    }
+  };
 
   // const handleDeleteAccount = () => {
   //   if (
@@ -102,7 +116,7 @@ const ProfilePage: NextPage = () => {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white shadow-lg rounded-2xl">
-      <ToastContainer/>
+       <ToastContainer />
       {/* Instructor Profile */}
       <section className="mb-8">
         <h2 className="text-2xl font-semibold mb-2">Instructor Profile</h2>
@@ -119,7 +133,7 @@ const ProfilePage: NextPage = () => {
             </div>
           )} */}
           <div>
-            <h3 className="text-xl font-medium">{instructor.fullname}</h3>
+            <h3 className="text-xl font-medium">{student.fullname}</h3>
             {/* <label className="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700">
               Change Image
               <input
@@ -144,7 +158,7 @@ const ProfilePage: NextPage = () => {
             <input
               id="name"
               type="text"
-              value={instructor.fullname}
+              value={student.fullname}
               disabled
               className="border rounded-lg p-2 bg-gray-100 cursor-not-allowed"
             />
@@ -156,7 +170,7 @@ const ProfilePage: NextPage = () => {
             <input
               id="email"
               type="email"
-              value={instructor.email}
+              value={student.email}
               disabled
               className="border rounded-lg p-2 bg-gray-100 cursor-not-allowed"
             />
@@ -201,7 +215,7 @@ const ProfilePage: NextPage = () => {
           <hr className="my-4" />
           {/* <button
             onClick={handleDeleteAccount}
-            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+            className="px-6 py-2 bg-[red] text-white rounded-lg hover:bg-red-700"
           >
             Delete Account
           </button> */}

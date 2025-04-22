@@ -76,7 +76,7 @@ export const TransactionItem: React.FC<TransactionItemProps> = ({
 
   return (
     <div className="">
-<div className="flex gap-[120px]  justify-between items-center border-b p-3">
+<div className="flex gap-[170px]  justify-between items-center border-b p-3">
       <div className="flex items-center gap-3">
         {isCredit ? (
           <ArrowDownCircle className="text-[green]" />
