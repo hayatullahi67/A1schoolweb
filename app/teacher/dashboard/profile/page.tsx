@@ -5,6 +5,32 @@ import { NextPage } from "next";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {  Check, X } from "lucide-react";
+import {
+  BookOpen,
+  Calendar,
+  Clock,
+  GraduationCap,
+  LayoutDashboard,
+  MessageSquare,
+  PanelLeft,
+  Settings,
+  Star,
+  User,
+} from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarTrigger,
+} from "@/components/ui/sider";
+
 
 type Instructor = {
   fullname: string;
@@ -48,6 +74,32 @@ const ProfilePage: NextPage = () => {
     }, [newPassword]);
 
     
+    const handleLogout = async () => {
+      try {
+        const response = await fetch(
+          `https://api.a1schools.org/auth/logout/${instructor.id}`,
+          {
+            method: 'GET', 
+            headers: {
+              'Content-Type': 'application/json',
+              
+            },
+          }
+        );
+    
+        if (response.ok) {
+          console.log('Logout successful');
+          // Optional: Clear any user data from localStorage/sessionStorage
+          // Redirect to login/home page
+          window.location.href = '/login';
+        } else {
+          const errorData = await response.json();
+          console.error('Logout failed:', errorData.message);
+        }
+      } catch (error) {
+        console.error('Network error during logout:', error);
+      }
+    };
 
       const validateNewPassword = (value: string) => {
         const newValidations = {
@@ -165,6 +217,97 @@ const ProfilePage: NextPage = () => {
       </div>
     );
   return (
+    <SidebarProvider>
+      <Sidebar>
+          <SidebarHeader className="flex items-center gap-2 px-4">
+            <BookOpen className="h-6 w-6 text-primary" />
+            <span className="font-bold">A1 School</span>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive>
+                  <Link href="/student/dashboard">
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>Dashboard</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {/* <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href={`/student/courses/${studentId}`}>
+                    <BookOpen className="h-4 w-4" />
+                    <span>My Courses</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem> */}
+              {/* <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/student/calendar">
+                    <Calendar className="h-4 w-4" />
+                    <span>Calendar</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem> */}
+              {/* <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/student/messages">
+                    <MessageSquare className="h-4 w-4" />
+                    <span>Messages</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem> */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/student/dashboard/profile">
+                    <User className="h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {/* <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/student/settings">
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem> */}
+
+              <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                     <button  onClick={handleLogout}>
+
+                     <span  className="text-[red]">Log Out</span>
+
+                     </button>
+                      
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter className="p-4">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/placeholder.svg?height=40&width=40"
+                width={40}
+                height={40}
+                alt="User avatar"
+                className="rounded-full"
+              />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">{instructor.fullname}</span>
+                <span className="text-xs text-muted-foreground">
+                 {instructor.email}
+                </span>
+              </div>
+            </div>
+          </SidebarFooter>
+        </Sidebar>
+        <SidebarTrigger className="h-10 w-10 mt-[30px] ml-[30px] lg:hidden border border-gray-300 rounded-md flex items-center justify-center">
+            <PanelLeft className="h-4 w-4" />
+          </SidebarTrigger>
+
     <div className="max-w-3xl mt-[50px] mb-[50px] mx-auto p-6 bg-white shadow-lg rounded-2xl">
       <ToastContainer/>
       {/* Instructor Profile */}
@@ -291,6 +434,7 @@ const ProfilePage: NextPage = () => {
         </a>
       </section> */}
     </div>
+    </SidebarProvider>
   );
 };
 

@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PanelLeft } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -35,6 +36,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarTrigger
 } from "@/components/ui/sider";
 type Student = {
   fullname: string;
@@ -431,6 +433,9 @@ setCourseid(courseIds)
           </SidebarFooter>
         </Sidebar>
         <div className="flex-1 p-8">
+        <SidebarTrigger className="h-10 w-10 mt-[30px] ml-[30px] lg:hidden border border-gray-300 rounded-md flex items-center justify-center">
+            <PanelLeft className="h-4 w-4" />
+          </SidebarTrigger>
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
@@ -551,7 +556,10 @@ setCourseid(courseIds)
                             {course.completedLessons} / {course.totalLessons}{" "}
                             lessons
                           </span>
+                          <Link href={`/student/dashboard/viewcourse/${course.id}`}>
                           <Button size="sm">Continue</Button>
+                  </Link>
+                          
                         </div>
                       </CardContent>
                     </Card>

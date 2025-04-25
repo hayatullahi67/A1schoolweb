@@ -7,9 +7,42 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { Plus, X, Video, Check, Upload } from "lucide-react";
+import { Plus, X, Video, Check, Upload , AlertCircle, CheckCircle} from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import {
+  BookOpen,
+  Calendar,
+  Clock,
+  GraduationCap,
+  LayoutDashboard,
+  MessageSquare,
+  PanelLeft,
+  Settings,
+  Star,
+  User,
+} from "lucide-react";
+
+import {
+  SidebarProvider,
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarTrigger,
+} from "@/components/ui/sider";
+// import Image from "next/image";
+import Link from "next/link";
+
+type Instructor = {
+  fullname: string;
+  email: string;
+  token: string;
+  id: string;
+};
 
 type Question = {
   id: number;
@@ -37,12 +70,54 @@ type Module = {
   lessons: Lesson[];
 };
 
-interface Instructor {
-  fullname: string;
-  email: string;
-  token: string;
-  id: string;
-}
+// interface Instructor {
+//   fullname: string;
+//   email: string;
+//   token: string;
+//   id: string;
+// }
+
+
+
+type ToastType = "success" | "error" | "info" | null;
+
+// Toast component
+const Toast = ({ 
+  message, 
+  type, 
+  onClose 
+}: { 
+  message: string; 
+  type: ToastType; 
+  onClose: () => void;
+}) => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      onClose();
+    }, 5000); // Auto close after 5 seconds
+
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  if (!message || !type) return null;
+
+  const bgColor = type === "success" ? "bg-[green]" : type === "error" ? "bg-[red]" : "bg-[blue]";
+  const Icon = type === "success" ? CheckCircle : AlertCircle;
+
+  
+  return (
+    <div className="fixed top-4 right-4 z-50 max-w-md animate-fade-in">
+      <div className={`${bgColor} text-white p-4 rounded-lg shadow-lg flex items-center gap-3`}>
+        <Icon className="h-5 w-5" />
+        <p className="flex-1">{message}</p>
+        <button onClick={onClose} className="text-white hover:text-gray-200">
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+    </div>
+  );
+};
+
 
 export default function CourseManagementPage() {
   const [courseName, setCourseName] = useState("");
@@ -52,6 +127,8 @@ export default function CourseManagementPage() {
   const [description, setDescription] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  
+  
   const [objectives, setObjectives] = useState<Objective[]>([
     { id: 1, title: "", description: "" },
   ]);
@@ -68,6 +145,14 @@ export default function CourseManagementPage() {
     token: "",
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+   const [toast, setToast] = useState<{
+    message: string;
+    type: ToastType;
+  }>({
+    message: "",
+    type: null,
+  });
   const router = useRouter();
 
   useEffect(() => {
@@ -86,6 +171,41 @@ export default function CourseManagementPage() {
       }
     }
   }, []);
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch(
+        `https://api.a1schools.org/auth/logout/${instructor.id}`,
+        {
+          method: 'GET', 
+          headers: {
+            'Content-Type': 'application/json',
+            
+          },
+        }
+      );
+  
+      if (response.ok) {
+        console.log('Logout successful');
+        // Optional: Clear any user data from localStorage/sessionStorage
+        // Redirect to login/home page
+        window.location.href = '/login';
+      } else {
+        const errorData = await response.json();
+        console.error('Logout failed:', errorData.message);
+      }
+    } catch (error) {
+      console.error('Network error during logout:', error);
+    }
+  };
+ const showToast = (message: string, type: ToastType) => {
+    setToast({ message, type });
+  };
+
+  // Clear toast notification
+  const clearToast = () => {
+    setToast({ message: "", type: null });
+  };
 
   const handleAddCategory = () => {
     if (category && !categories.includes(category)) {
@@ -347,41 +467,48 @@ export default function CourseManagementPage() {
 
   const validateForm = () => {
     if (!courseName.trim()) {
-      alert("Please enter a course name");
+      // alert("Please enter a course name");
+      showToast("Please enter a course name", "error");
       return false;
     }
 
     if (!coursePrice.trim() || isNaN(Number.parseFloat(coursePrice))) {
-      alert("Please enter a valid price");
+      // alert("Please enter a valid price");
+       showToast("Please enter a valid price", "error");
       return false;
     }
 
     if (categories.length === 0) {
-      alert("Please add at least one category");
+      // alert("Please add at least one category");
+      showToast("Please add at least one category", "error");
       return false;
     }
 
     if (!description.trim()) {
-      alert("Please enter a course description");
+      // alert("Please enter a course description");
+      showToast("Please enter a course description", "error");
       return false;
     }
 
     if (!imagePreview) {
-      alert("Please upload a course thumbnail");
+      // alert("Please upload a course thumbnail");
+      showToast("Please upload a course thumbnail", "error");
       return false;
     }
 
     // Validate objectives
     const invalidObjectives = objectives.some((obj) => !obj.title.trim());
     if (invalidObjectives) {
-      alert("All learning objectives must have a title");
+      // alert("All learning objectives must have a title");
+      showToast("All learning objectives must have a title", "error");
       return false;
     }
 
     // Validate modules
     const invalidModules = modules.some((module) => !module.title.trim());
     if (invalidModules) {
-      alert("All modules must have a title");
+      // alert("All modules must have a title");
+      showToast("All modules must have a title", "error");
       return false;
     }
 
@@ -390,7 +517,8 @@ export default function CourseManagementPage() {
       (module) => module.lessons.length === 0
     );
     if (modulesWithoutLessons) {
-      alert("Each module must have at least one lesson");
+      // alert("Each module must have at least one lesson");
+      showToast("Each module must have at least one lesson", "error");
       return false;
     }
 
@@ -400,7 +528,9 @@ export default function CourseManagementPage() {
       )
     );
     if (invalidLessons) {
-      alert("All lessons must have a title and video");
+      // alert("All lessons must have a title and video");
+       showToast("All lessons must have a title and video", "error");
+      return false;
       return false;
     }
 
@@ -471,7 +601,8 @@ export default function CourseManagementPage() {
         );
 
         if (!imageResponse.ok) {
-          console.error("Failed to upload course image");
+          // console.error("Failed to upload course image");
+          showToast("Warning: Failed to upload course image", "info");
         }
       }
 
@@ -494,7 +625,8 @@ export default function CourseManagementPage() {
         );
 
         if (!moduleResponse.ok) {
-          console.error(`Failed to create module: ${m.title}`);
+          // console.error(`Failed to create module: ${m.title}`);
+          showToast(`Warning: Failed to create module: ${m.title}`, "info");
           continue;
         }
 
@@ -518,7 +650,9 @@ export default function CourseManagementPage() {
           );
 
           if (!lessonResponse.ok) {
-            console.error(`Failed to create lesson: ${lesson.title}`);
+            // console.error(`Failed to create lesson: ${lesson.title}`);
+           
+            showToast(`Warning: Failed to create lesson: ${lesson.title}`, "info");
             continue;
           }
 
@@ -545,6 +679,7 @@ export default function CourseManagementPage() {
               console.error(
                 `Failed to upload video for lesson: ${lesson.title}`
               );
+              showToast(`Warning: Failed to upload video for lesson: ${lesson.title}`, "info");
             }
           }
         }
@@ -579,8 +714,13 @@ export default function CourseManagementPage() {
         }
       }
 
-      alert("Course created successfully!");
-      router.push("/teacher/dashboard");
+      // alert("Course created successfully!");
+      showToast("Course created successfully!", "success");
+      // router.push("/teacher/dashboard");
+        setTimeout(() => {
+        router.push("/teacher/dashboard");
+      }, 2000);
+
     } catch (error) {
       console.error("Error creating course:", error);
       alert(
@@ -588,14 +728,113 @@ export default function CourseManagementPage() {
           error instanceof Error ? error.message : "Unknown error"
         }`
       );
+      showToast(`Failed to create course: ${error instanceof Error ? error.message : "Unknown error"}`, "error")
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="flex justify-center">
-      <div className="w-[90%] md:w-[80%] lg:w-[70%] my-[50px]">
+    <SidebarProvider>
+      <Sidebar>
+          <SidebarHeader className="flex items-center gap-2 px-4">
+            <BookOpen className="h-6 w-6 text-primary" />
+            <span className="font-bold">A1 School</span>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild isActive>
+                  <Link href="/student/dashboard">
+                    <LayoutDashboard className="h-4 w-4" />
+                    <span>Dashboard</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {/* <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href={`/student/courses/${studentId}`}>
+                    <BookOpen className="h-4 w-4" />
+                    <span>My Courses</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem> */}
+              {/* <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/student/calendar">
+                    <Calendar className="h-4 w-4" />
+                    <span>Calendar</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem> */}
+              {/* <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/student/messages">
+                    <MessageSquare className="h-4 w-4" />
+                    <span>Messages</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem> */}
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/student/dashboard/profile">
+                    <User className="h-4 w-4" />
+                    <span>Profile</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {/* <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <Link href="/student/settings">
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem> */}
+
+              <SidebarMenuItem>
+                    <SidebarMenuButton asChild>
+                     <button  onClick={handleLogout}>
+
+                     <span  className="text-[red]">Log Out</span>
+
+                     </button>
+                      
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarContent>
+          <SidebarFooter className="p-4">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/placeholder.svg?height=40&width=40"
+                width={40}
+                height={40}
+                alt="User avatar"
+                className="rounded-full"
+              />
+              <div className="flex flex-col">
+                <span className="text-sm font-medium">{instructor.fullname}</span>
+                <span className="text-xs text-muted-foreground">
+                 {instructor.email}
+                </span>
+              </div>
+            </div>
+          </SidebarFooter>
+        </Sidebar>
+        <SidebarTrigger className="h-10 w-10 lg:hidden mt-[30px] ml-[30px] border border-gray-300 rounded-md flex items-center justify-center">
+            <PanelLeft className="h-4 w-4" />
+          </SidebarTrigger>
+    <div className="flex w-[100%] justify-center">
+       {/* Toast Notification */}
+      {toast.type && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={clearToast}
+        />
+      )}
+      <div className="w-[90%] md:w-[80%] lg:w-[90%] my-[50px]">
         <h1 className="text-2xl font-bold text-[black]">Course Details</h1>
         <p className="mt-[5px] text-[gray]">
           Enter information about your course
@@ -1073,6 +1312,6 @@ export default function CourseManagementPage() {
           </Button>
         </div>
       </div>
-    </div>
+    </div></SidebarProvider>
   );
 }

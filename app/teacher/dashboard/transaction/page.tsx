@@ -11,6 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarTrigger,
 } from "@/components/ui/sider";
 import Link from "next/link";
 import {
@@ -19,6 +20,7 @@ import {
   DollarSign,
   LayoutDashboard,
   MessageSquare,
+  PanelLeft,
   PlusCircle,
   Settings,
   User,
@@ -60,6 +62,9 @@ type Instructor = {
   email: string;
   token: string;
   id: string;
+  wallet: {
+    balance: string;
+  };
 };
 export default function Home() {
  
@@ -68,12 +73,17 @@ export default function Home() {
      email: "",
      id:"",
      token: "",
+     wallet:  {
+      balance: "0.00" // Default value
+    }
    });
   const [transactions , setTransactions ] = useState<Transaction[]>([])
    const instructorId = instructor.id;
    const  token = instructor.token;
  
- 
+  //  const wallet = instructor.wallet.balance;
+   
+  //  console.log("wealle" , wallet)
  
  
   useEffect(() => {
@@ -87,11 +97,13 @@ export default function Home() {
         fullname: parsed.fullname || "Student",
         email: parsed.email || "",
         id: parsed.id,
-        token: parsed.token
+        token: parsed.token,
+        wallet: parsed.wallet
       });
     }
   }, []);
 
+   console.log("instr",instructor)
   useEffect(() => {
     const fetchSuccessfulTransactions = async () => {
       if (!instructorId || !token) return;
@@ -152,7 +164,7 @@ export default function Home() {
 
 
 
-    <Sidebar>
+            <Sidebar>
               <SidebarHeader className="flex items-center gap-2 px-4">
                 <BookOpen className="h-6 w-6 text-primary" />
                 <span className="font-bold">A1 School</span>
@@ -254,10 +266,35 @@ export default function Home() {
                 </div>
               </SidebarFooter>
             </Sidebar>
-     <div className="pb-20 max-w-md mx-auto">
+            <SidebarTrigger className="h-10 w-10 mt-[30px] ml-[30px] lg:hidden border border-gray-300 rounded-md flex items-center justify-center">
+            <PanelLeft className="h-4 w-4" />
+          </SidebarTrigger>
+     <div className="pb-20 w-[65%] mx-auto">
       {/* {transactions.map((tx, idx) => (
         <TransactionItem key={idx} {...tx} />
+
+
       ))} */}
+      <div className="bg-[lightblue] h-[100px] flex items-center pl-[50px]">
+       <div className="text-white">
+          
+          <div>
+        <p>Total Balance</p> 
+        <p>${parseFloat(instructor.wallet.balance).toFixed(2)}</p>  
+          </div>
+
+          <div>
+            <Link href="/teacher/dashboard/request">
+              <div>
+                Withdraw
+              </div>
+            </Link>
+          </div>
+
+
+       </div>
+
+      </div>
 
 {Array.isArray(transactions) && transactions.length > 0 ? (
     transactions.map((tx, idx) => (

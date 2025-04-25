@@ -1,7 +1,9 @@
 "use client";
 
 
-
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from 'react-toastify';
 import { useState , useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -11,6 +13,7 @@ import {
   DollarSign,
   LayoutDashboard,
   MessageSquare,
+  PanelLeft,
   PlusCircle,
   Settings,
   User,
@@ -35,6 +38,7 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarTrigger,
 } from "@/components/ui/sider";
 
 type Instructor = {
@@ -161,7 +165,8 @@ const [instructor, setInstructor] = useState<Instructor>({
               
               setCourses(coursesList);
             } catch (error) {
-              console.error("Error fetching courses:", error);
+              toast.error(`Error fetching courses:${error} `);
+
             }
           };
       
@@ -658,10 +663,67 @@ const [instructor, setInstructor] = useState<Instructor>({
           console.error('Network error during logout:', error);
         }
       };
+  
       
+      const handleDeleteCourse = async (courseId: string) => {
+        // if (!window.confirm('Are you sure you want to delete this course?')) return;
+      
+        try {
+          const response = await fetch(`https://api.a1schools.org/courses/${courseId}`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${instructor.token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+      
+          if (response.ok) {
+            // Remove the deleted course from state
+            setCourses(prev => prev.filter(course => course.id !== courseId));
+            // Update total rating
+            // setTotalRating(prev => (prev || 0) - Number(courses.find(c => c.id === courseId)?.average_rating || 0));
+            toast.success("Course successfully deleted", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+            });
+          } else {
+            const errorData = await response.json();
+            console.error('Delete failed:', errorData.message);
+            toast.error('Failed to delete course: ' + (errorData.message || 'Unknown error'));
+          }
+        } catch (error) {
+          console.error('Delete error:', error);
+          toast.error(error instanceof Error ? error.message : 'An error occurred while deleting the course', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+        }
+      };
 
   return (
     <SidebarProvider>
+    <ToastContainer 
+  position="top-right"
+  autoClose={5000}
+  hideProgressBar={false}
+  newestOnTop={false}
+  closeOnClick
+  rtl={false}
+  pauseOnFocusLoss
+  draggable
+  pauseOnHover
+  theme="light"
+/>
       <div className="flex min-h-screen">
         <Sidebar>
           <SidebarHeader className="flex items-center gap-2 px-4">
@@ -766,6 +828,9 @@ const [instructor, setInstructor] = useState<Instructor>({
           </SidebarFooter>
         </Sidebar>
         <div className="flex-1 p-8">
+        <SidebarTrigger className="h-10 w-10 lg:hidden mt-[30px] ml-[30px] border border-gray-300 rounded-md flex items-center justify-center">
+            <PanelLeft className="h-4 w-4" />
+          </SidebarTrigger>
           <div className="flex items-center justify-between mb-8">
             <div>
               <h1 className="text-3xl font-bold tracking-tight">
@@ -903,6 +968,13 @@ const [instructor, setInstructor] = useState<Instructor>({
                             Last updated:  {new Date(course.updated_at).toLocaleDateString()}
                           </span>
                           <Button size="sm">Edit</Button>
+                          <Button 
+                               size="sm" 
+                               className="bg-[red] hover:bg-[#ff0000cc]"
+                               onClick={() => handleDeleteCourse(course.id)}
+                             >
+                               Delete
+                             </Button>
                         </div>
                       </CardContent>
                     </Card>
